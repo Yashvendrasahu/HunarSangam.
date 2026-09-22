@@ -32,7 +32,7 @@ migrate_working_dir/
 
 # Node / Vite
 node_modules/
-dist/
+# dist/ is kept for deployment web artifacts
 
 # Python backend cache
 __pycache__/
