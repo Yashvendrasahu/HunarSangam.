@@ -4,6 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "export PATH=\"$PATH:/opt/flutter/bin:/usr/local/bin\"; flutter run -d web-server --web-port 3000 --web-hostname 0.0.0.0 --no-wasm-dry-run",
-    "build": "mkdir -p dist && (test -f build/web/index.html && cp -r build/web/* dist/ || cp -r web/* dist/) && test -f dist/index.html"
+    "build": "export PATH=\"$PATH:/opt/flutter/bin:/usr/local/bin\"; flutter build web --release --no-wasm-dry-run --output=dist"
   }
 }
