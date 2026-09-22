@@ -2,113 +2,144 @@
 
 import 'package:flutter/material.dart';
 
+/// Matches 'Distribution Channels Activated' in p9 & p10
 class DistributionChannelsCard extends StatelessWidget {
-  final bool ondcEnabled;
-  final bool exportEnabled;
-  final bool bulkEnabled;
-  final ValueChanged<bool>? onOndcChanged;
-  final ValueChanged<bool>? onExportChanged;
-  final ValueChanged<bool>? onBulkChanged;
-
-  const DistributionChannelsCard({
-    super.key,
-    this.ondcEnabled = true,
-    this.exportEnabled = true,
-    this.bulkEnabled = true,
-    this.onOndcChanged,
-    this.onExportChanged,
-    this.onBulkChanged,
-  });
+  const DistributionChannelsCard({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFAF6F2),
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.0),
         border: Border.all(color: const Color(0xFFEADFD6)),
       ),
+      padding: const EdgeInsets.all(14.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: const [
-              Icon(Icons.hub_outlined, color: Color(0xFFA84318), size: 20),
-              SizedBox(width: 8),
-              Text(
-                'Distribution & Discovery Channels',
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Distribution Channels Activated',
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 14.5,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF221C19),
                 ),
               ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD4EDDA),
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                child: const Text(
+                  '3 Active',
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1E6B24),
+                  ),
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 12),
-          _buildChannelTile(
-            title: 'ONDC Network Sync',
-            subtitle: 'Sync instantly to Government open e-commerce network',
-            value: ondcEnabled,
-            onChanged: onOndcChanged,
+          const SizedBox(height: 12.0),
+
+          // Channel 1: HunarSangam Marketplace
+          _buildChannelItem(
+            icon: Icons.storefront_outlined,
+            iconBg: const Color(0xFFFFE8DC),
+            iconColor: const Color(0xFFBA4B20),
+            title: 'HunarSangam Marketplace',
+            subtitle: 'Live • Instant Quotations enabled',
           ),
-          const Divider(height: 16, color: Color(0xFFEADBCE)),
-          _buildChannelTile(
-            title: 'Export / Global Bulk Buyers',
-            subtitle: 'Make visible to international institutional sourcing',
-            value: exportEnabled,
-            onChanged: onExportChanged,
+
+          const SizedBox(height: 8.0),
+
+          // Channel 2: ONDC Handicraft Registry
+          _buildChannelItem(
+            icon: Icons.hub_outlined,
+            iconBg: const Color(0xFFD4EDDA),
+            iconColor: const Color(0xFF1E6B24),
+            title: 'ONDC Handicraft Registry',
+            subtitle: 'Synced • Pan-India open network',
           ),
-          const Divider(height: 16, color: Color(0xFFEADBCE)),
-          _buildChannelTile(
-            title: 'Verified Domestic B2B Sourcing',
-            subtitle: 'Direct matching with retail brands & gifting teams',
-            value: bulkEnabled,
-            onChanged: onBulkChanged,
+
+          const SizedBox(height: 8.0),
+
+          // Channel 3: Direct WhatsApp Catalog
+          _buildChannelItem(
+            icon: Icons.share_outlined,
+            iconBg: const Color(0xFFF6EAE2),
+            iconColor: const Color(0xFF6B584E),
+            title: 'Direct WhatsApp Catalog',
+            subtitle: 'Link ready to share with buyers',
           ),
         ],
       ),
     );
   }
 
-  Widget _buildChannelTile({
+  Widget _buildChannelItem({
+    required IconData icon,
+    required Color iconBg,
+    required Color iconColor,
     required String title,
     required String subtitle,
-    required bool value,
-    required ValueChanged<bool>? onChanged,
   }) {
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF2E231D),
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: Color(0xFF7A685F),
-                ),
-              ),
-            ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAF2EC),
+        borderRadius: BorderRadius.circular(12.0),
+        border: Border.all(color: const Color(0xFFECDACF)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: iconBg,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Icon(icon, color: iconColor, size: 18),
           ),
-        ),
-        Switch(
-          value: value,
-          activeColor: const Color(0xFFA84318),
-          onChanged: onChanged ?? (_) {},
-        ),
-      ],
+          const SizedBox(width: 10.0),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF221C19),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 10.5,
+                    color: Color(0xFF2E7D32),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Icon(
+            Icons.check_circle,
+            color: Color(0xFF2E7D32),
+            size: 20,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -133,14 +133,18 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                   borderRadius: BorderRadius.circular(8.0),
                   border: Border.all(color: const Color(0xFFE5D5CB), width: 1.0),
                 ),
-                padding: const EdgeInsets.all(3.0),
-                child: const Center(
-                  child: Text(
-                    'हुनर',
-                    style: TextStyle(
-                      fontSize: 9.5,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF7C3F24),
+                clipBehavior: Clip.antiAlias,
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  fit: BoxFit.contain,
+                  errorBuilder: (ctx, err, stack) => const Center(
+                    child: Text(
+                      'हुनर',
+                      style: TextStyle(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF7C3F24),
+                      ),
                     ),
                   ),
                 ),

@@ -3,6 +3,7 @@
 // 100% UI Match to 'd4 - bulk — Featured Artisans - pagr from discover page flow.png'
 
 import 'package:flutter/material.dart';
+import '../widgets/buyer_bottom_nav_bar.dart';
 
 class BuyerFeaturedArtisansScreen extends StatefulWidget {
   final VoidCallback? onBack;
@@ -618,27 +619,13 @@ class _BuyerFeaturedArtisansScreenState extends State<BuyerFeaturedArtisansScree
   }
 
   Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
+    return BuyerBottomNavBar(
       currentIndex: _currentNavIndex,
       onTap: (idx) {
         setState(() => _currentNavIndex = idx);
         widget.onTabChange?.call(idx);
         if (idx == 0) widget.onBack?.call();
       },
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: Colors.white,
-      selectedItemColor: _primaryRust,
-      unselectedItemColor: const Color(0xFF7A6A61),
-      selectedFontSize: 11,
-      unselectedFontSize: 11,
-      elevation: 8,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.storefront), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Discover'),
-        BottomNavigationBarItem(icon: Icon(Icons.assignment), label: 'Requirement'),
-        BottomNavigationBarItem(icon: Icon(Icons.receipt_long), label: 'Order'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-      ],
     );
   }
 }

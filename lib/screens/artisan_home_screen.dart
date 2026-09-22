@@ -20,6 +20,7 @@ import 'order_request_screen.dart';
 import 'artisan_collective_screen.dart';
 import 'suggested_collaborators_screen.dart';
 import 'artisan_buyer_chat_screen.dart';
+import 'artisan_chat_screen.dart';
 import 'conversations_list_screen.dart';
 import '../services/chat_service.dart';
 
@@ -481,6 +482,12 @@ class _ArtisanHomeScreenState extends State<ArtisanHomeScreen> {
               _activeSubScreen = null;
               _currentNavIndex = idx;
             }),
+          );
+        }),
+        onChatWithArtisan: (artisanName, orderTitle) => setState(() {
+          _activeSubScreen = ArtisanChatScreen(
+            state: widget.state,
+            onBack: () => setState(() => _activeSubScreen = null),
           );
         }),
         onChatWithBuyer: (buyerName, title) => setState(() {

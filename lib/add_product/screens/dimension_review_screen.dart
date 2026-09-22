@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../models/product_draft.dart';
 import '../widgets/artisan_bottom_navigation.dart';
 
+/// Screen matching 'p4— photo and dimension review.png'
+/// Step 2 of 2 • Dimension Tool • ₹10 Coin Size Detector
 class DimensionReviewScreen extends StatelessWidget {
   final ProductDraft draft;
   final VoidCallback onAccept;
@@ -24,101 +26,530 @@ class DimensionReviewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFDFBF9),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF2D2421)),
-          onPressed: onBack,
-        ),
-        title: const Text(
-          'Review Dimensions (Step 3 of 8)',
-          style: TextStyle(color: Color(0xFF2D2421), fontSize: 16, fontWeight: FontWeight.w800),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+      body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 220,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                image: DecorationImage(
-                  image: NetworkImage(draft.photoUrl),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFEADFD6)),
-              ),
-              child: Column(
+            // Top App Bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
                 children: [
-                  _buildDimRow('Diameter / Width', '${draft.diameterIn}" (30.5 cm)'),
-                  const Divider(height: 18, color: Color(0xFFEADBCE)),
-                  _buildDimRow('Height', '${draft.heightIn}" (21.6 cm)'),
-                  const Divider(height: 18, color: Color(0xFFEADBCE)),
-                  _buildDimRow('Estimated Weight', '${draft.estWeightGrams} grams'),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Color(0xFF1F1612)),
+                    onPressed: onBack,
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text(
+                          'STEP 2 OF 2 • DIMENSION TOOL',
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFFBA4B20),
+                            letterSpacing: 0.8,
+                          ),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          '₹10 Coin Size Detector',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF1F1612),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF6EAE2),
+                      borderRadius: BorderRadius.circular(16.0),
+                      border: Border.all(color: const Color(0xFFE5D5CB)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.volume_up, size: 16, color: Color(0xFF8C3A16)),
+                        SizedBox(width: 4.0),
+                        Text(
+                          'मदद',
+                          style: TextStyle(
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF8C3A16),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFFA84318),
-                      side: const BorderSide(color: Color(0xFFA84318)),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+
+            // Scrollable Content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Two side-by-side photos
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            height: 175,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14.0),
+                              image: const DecorationImage(
+                                image: NetworkImage(
+                                  'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600&auto=format&fit=crop&q=80',
+                                ),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            child: Stack(
+                              children: [
+                                // Corner Guides on coin detection photo
+                                Positioned(
+                                  top: 10,
+                                  left: 10,
+                                  child: Container(
+                                    width: 16,
+                                    height: 16,
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        top: BorderSide(color: Colors.white, width: 2),
+                                        left: BorderSide(color: Colors.white, width: 2),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 10,
+                                  right: 10,
+                                  child: Container(
+                                    width: 16,
+                                    height: 16,
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        top: BorderSide(color: Colors.white, width: 2),
+                                        right: BorderSide(color: Colors.white, width: 2),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 10,
+                                  left: 10,
+                                  child: Container(
+                                    width: 16,
+                                    height: 16,
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(color: Colors.white, width: 2),
+                                        left: BorderSide(color: Colors.white, width: 2),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10.0),
+                        Expanded(
+                          child: Container(
+                            height: 175,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14.0),
+                              image: const DecorationImage(
+                                image: NetworkImage(
+                                  'https://images.unsplash.com/photo-1590736969955-71cc94801759?auto=format&fit=crop&w=600&q=80',
+                                ),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    onPressed: onRetake,
-                    child: const Text('Retake Photo', style: TextStyle(fontWeight: FontWeight.w700)),
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA84318),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+
+                    const SizedBox(height: 12.0),
+
+                    // Retake Photo Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 42.0,
+                      child: OutlinedButton.icon(
+                        icon: const Icon(Icons.refresh, size: 16, color: Color(0xFF3B2A22)),
+                        label: const Text(
+                          'Retake Photo',
+                          style: TextStyle(
+                            fontSize: 13.0,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF3B2A22),
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: const Color(0xFFF9EFE9),
+                          side: const BorderSide(color: Color(0xFFE4D3C6)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        onPressed: onRetake,
+                      ),
                     ),
-                    onPressed: onAccept,
-                    child: const Text('Looks Great', style: TextStyle(fontWeight: FontWeight.w700)),
-                  ),
+
+                    const SizedBox(height: 12.0),
+
+                    // Zero-Typing Voice Correction Card
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFBF2EC),
+                        borderRadius: BorderRadius.circular(14.0),
+                        border: Border.all(color: const Color(0xFFECDACF)),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 36,
+                            height: 36,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF9C3C18),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.mic, color: Colors.white, size: 18),
+                          ),
+                          const SizedBox(width: 12.0),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Zero-Typing Voice Correction',
+                                  style: TextStyle(
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF221C19),
+                                  ),
+                                ),
+                                const SizedBox(height: 2.0),
+                                RichText(
+                                  text: const TextSpan(
+                                    text: 'Say: ',
+                                    style: TextStyle(fontSize: 11.5, color: Color(0xFF6B584E)),
+                                    children: [
+                                      TextSpan(
+                                        text: '"ऊंचाई 6 इंच करो"',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xFFBA4B20),
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: ' or tap values to fine-tune.',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.hearing_outlined, color: Color(0xFF8C3A16), size: 22),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 14.0),
+
+                    // Computer Vision Output Container
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16.0),
+                        border: Border.all(color: const Color(0xFFEADFD6)),
+                      ),
+                      padding: const EdgeInsets.all(14.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text(
+                                    'COMPUTER VISION OUTPUT',
+                                    style: TextStyle(
+                                      fontSize: 10.0,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF2E7D32),
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                  SizedBox(height: 2.0),
+                                  Text(
+                                    'Detected Dimensions',
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF221C19),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFD4EDDA),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: const [
+                                    Icon(Icons.check_circle, color: Color(0xFF2E7D32), size: 12),
+                                    SizedBox(width: 4.0),
+                                    Text(
+                                      'Auto-Calculated',
+                                      style: TextStyle(
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF1E6B24),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 12.0),
+
+                          // 3 Metric Boxes: Diameter, Height, Est. Weight
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.all(10.0),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFAF3EE),
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: const [
+                                          Text('Diameter', style: TextStyle(fontSize: 10.5, color: Color(0xFF6B584E))),
+                                          Icon(Icons.swap_horiz, size: 14, color: Color(0xFF6B584E)),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4.0),
+                                      RichText(
+                                        text: const TextSpan(
+                                          text: '12.4 ',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF221C19)),
+                                          children: [
+                                            TextSpan(text: 'in', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
+                                          ],
+                                        ),
+                                      ),
+                                      const Text(
+                                        '31.5 cm',
+                                        style: TextStyle(fontSize: 10.0, color: Color(0xFF8B776E)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8.0),
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.all(10.0),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFAF3EE),
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: const [
+                                          Text('Height', style: TextStyle(fontSize: 10.5, color: Color(0xFF6B584E))),
+                                          Icon(Icons.swap_vert, size: 14, color: Color(0xFF6B584E)),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4.0),
+                                      RichText(
+                                        text: const TextSpan(
+                                          text: '6.2 ',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF221C19)),
+                                          children: [
+                                            TextSpan(text: 'in', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
+                                          ],
+                                        ),
+                                      ),
+                                      const Text(
+                                        '15.7 cm',
+                                        style: TextStyle(fontSize: 10.0, color: Color(0xFF8B776E)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8.0),
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.all(10.0),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFAF3EE),
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: const [
+                                          Text('Est. Weight', style: TextStyle(fontSize: 10.5, color: Color(0xFF6B584E))),
+                                          Icon(Icons.scale_outlined, size: 14, color: Color(0xFF6B584E)),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4.0),
+                                      RichText(
+                                        text: const TextSpan(
+                                          text: '~420 ',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF221C19)),
+                                          children: [
+                                            TextSpan(text: 'g', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
+                                          ],
+                                        ),
+                                      ),
+                                      const Text(
+                                        'Light Cane',
+                                        style: TextStyle(fontSize: 10.0, color: Color(0xFF2E7D32), fontWeight: FontWeight.w700),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 12.0),
+
+                          // Packaging Box Recommendation Card
+                          Container(
+                            padding: const EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFDF7F3),
+                              borderRadius: BorderRadius.circular(12.0),
+                              border: Border.all(color: const Color(0xFFECDACF)),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 32,
+                                  height: 32,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF3E4DA),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: const Icon(Icons.archive_outlined, size: 18, color: Color(0xFF9C3C18)),
+                                ),
+                                const SizedBox(width: 10.0),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Text(
+                                            'Recommended Packaging Box',
+                                            style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: Color(0xFF221C19)),
+                                          ),
+                                          const SizedBox(width: 6.0),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 1.5),
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFFFE8DC),
+                                              borderRadius: BorderRadius.circular(4.0),
+                                            ),
+                                            child: const Text(
+                                              'B2B Ready',
+                                              style: TextStyle(fontSize: 9.0, fontWeight: FontWeight.w700, color: Color(0xFFBA4B20)),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 2.0),
+                                      const Text(
+                                        '14 × 14 × 8 in Corrugated Carton.',
+                                        style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: Color(0xFF6B584E)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 16.0),
+
+                    // Accept Dimensions & Proceed Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50.0,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF9C3C18),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                        ),
+                        onPressed: onAccept,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text(
+                              'Accept Dimensions & Proceed',
+                              style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w800),
+                            ),
+                            SizedBox(width: 8.0),
+                            Icon(Icons.arrow_forward, size: 18),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16.0),
+                  ],
                 ),
-              ],
+              ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: onNavigateTab != null
-          ? ArtisanBottomNavigation(
-              currentIndex: 1,
-              onTabSelected: onNavigateTab,
-            )
-          : null,
-    );
-  }
-
-  Widget _buildDimRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: const TextStyle(fontSize: 13.5, color: Color(0xFF7A685F), fontWeight: FontWeight.w500)),
-        Text(value, style: const TextStyle(fontSize: 14.5, color: Color(0xFF2D2421), fontWeight: FontWeight.w800)),
-      ],
+      bottomNavigationBar: ArtisanBottomNavigation(
+        currentIndex: 1, // Products
+        onTap: onNavigateTab,
+      ),
     );
   }
 }

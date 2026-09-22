@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import '../models/buyer_onboarding_model.dart';
+import '../widgets/buyer_bottom_nav_bar.dart';
 
 class BuyerDiscoverScreen extends StatefulWidget {
   final BuyerOnboardingModel? model;
@@ -1146,15 +1147,13 @@ class _BuyerDiscoverScreenState extends State<BuyerDiscoverScreen> {
   }
 
   Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
+    return BuyerBottomNavBar(
       currentIndex: _currentNavIndex,
       onTap: (idx) {
         setState(() => _currentNavIndex = idx);
         widget.onTabChange?.call(idx);
         if (idx == 0) {
           widget.onBack?.call();
-        } else if (idx == 1) {
-          // Already on Discover
         } else if (idx == 2) {
           _showSnack('Opening Requirements');
         } else if (idx == 3) {
@@ -1163,20 +1162,6 @@ class _BuyerDiscoverScreenState extends State<BuyerDiscoverScreen> {
           _showSnack('Opening Profile');
         }
       },
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: Colors.white,
-      selectedItemColor: _primaryRust,
-      unselectedItemColor: const Color(0xFF7A6A61),
-      selectedFontSize: 11,
-      unselectedFontSize: 11,
-      elevation: 8,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.storefront), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Discover'),
-        BottomNavigationBarItem(icon: Icon(Icons.assignment), label: 'Requirement'),
-        BottomNavigationBarItem(icon: Icon(Icons.receipt_long), label: 'Order'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-      ],
     );
   }
 }

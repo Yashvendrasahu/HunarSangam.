@@ -114,3 +114,5 @@ class ArtisanStudioTipsCard extends StatelessWidget {
     );
   }
 }
+
+typedef ArtisanStudioTips = ArtisanStudioTipsCard;

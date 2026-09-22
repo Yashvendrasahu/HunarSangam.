@@ -351,6 +351,7 @@ class _OnboardingFlowCoordinatorState extends State<OnboardingFlowCoordinator> {
     if (_buyerStep == 10) {
       return BuyerArtisanProfileScreen(
         onBack: () => setState(() => _buyerStep = 6),
+        onSendRequirement: () => setState(() => _buyerStep = 13),
         onTabChange: (idx) {
           if (idx == 0) setState(() => _buyerStep = 5);
           if (idx == 1) setState(() => _buyerStep = 6);
