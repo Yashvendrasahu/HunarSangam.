@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "flutter run -d web-server --web-port 3000 --web-hostname 0.0.0.0",
-    "build": "echo 'Flutter project ready for build'"
+    "dev": "flutter run -d web-server --web-port 3000 --web-hostname 0.0.0.0 --no-wasm-dry-run",
+    "build": "flutter build web --release --no-wasm-dry-run && rm -rf dist && mkdir -p dist && cp -r build/web/* dist/"
   }
 }
