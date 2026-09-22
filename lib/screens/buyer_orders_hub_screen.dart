@@ -50,22 +50,13 @@ class _BuyerOrdersHubScreenState extends State<BuyerOrdersHubScreen> {
           icon: const Icon(Icons.arrow_back, color: primaryRust),
           onPressed: widget.onBack ?? () => Navigator.of(context).maybePop(),
         ),
-        title: Row(
-          children: const [
-            HunarSangamLogoBadge(size: 26.0),
-            SizedBox(width: 8.0),
-            Flexible(
-              child: Text(
-                'Orders & Production',
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: primaryRust,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 18,
-                ),
-              ),
-            ),
-          ],
+        title: const Text(
+          'Orders & Production',
+          style: TextStyle(
+            color: primaryRust,
+            fontWeight: FontWeight.w900,
+            fontSize: 19,
+          ),
         ),
         actions: [
           IconButton(
@@ -109,7 +100,7 @@ class _BuyerOrdersHubScreenState extends State<BuyerOrdersHubScreen> {
                           ),
                           const SizedBox(height: 2),
                           const Text(
-                            'Track the orders you\'ve placed with craft makers',
+                            'Track the orders you\'ve placed with artisans',
                             style: TextStyle(
                               color: textMuted,
                               fontSize: 12,
@@ -217,14 +208,14 @@ class _BuyerOrdersHubScreenState extends State<BuyerOrdersHubScreen> {
                   datePlaced: '18 Sep 2026',
                   quantity: '200 pieces',
                   requiredDate: '15 Nov 2026',
-                  statusBadge: '⏳ Awaiting Craft Maker',
+                  statusBadge: '⏳ Awaiting Artisan',
                   statusBg: const Color(0xFFFEF3C7),
                   statusText: const Color(0xFF92400E),
                   title: 'Hexagonal Bamboo Planters',
                   artisan: 'Sunita Devi • Barpeta Women SHG',
                   orderValue: '₹76,000',
                   imageUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=300&q=80',
-                  footerNote: 'Craft Maker has 18 hrs left to review',
+                  footerNote: 'Artisan has 18 hrs left to review',
                   singleButtonAction: true,
                   primaryActionText: 'View Status / Details',
                   onPrimaryAction: () => widget.onViewOrderDetails?.call('HS-ORD-8819'),
@@ -241,7 +232,7 @@ class _BuyerOrdersHubScreenState extends State<BuyerOrdersHubScreen> {
                   title: 'Clay Terracotta Kulhads',
                   artisan: 'Kishan Prajapati • Kutch Guild',
                   originalValue: '₹45,000',
-                  counterOfferText: 'Craft Maker offered: 900 pcs @ ₹48',
+                  counterOfferText: 'Artisan offered: 900 pcs @ ₹48',
                   note: 'Kiln capacity limits initial batch to 900 units before festival cutoff.',
                   imageUrl: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=300&q=80',
                   onReview: () => widget.onViewOrderDetails?.call('HS-ORD-8740'),
@@ -312,7 +303,7 @@ class _BuyerOrdersHubScreenState extends State<BuyerOrdersHubScreen> {
                                 SizedBox(width: 4),
                                 Expanded(
                                   child: Text(
-                                    '100% Bulk Buyer Guarantee on Defective Batches',
+                                    '100% Buyer Guarantee on Defective Batches',
                                     style: TextStyle(
                                       color: Color(0xFF065F46),
                                       fontWeight: FontWeight.w800,

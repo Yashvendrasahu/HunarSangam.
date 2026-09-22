@@ -370,7 +370,7 @@ class _BuyerVoiceRequirementScreenState extends State<BuyerVoiceRequirementScree
                         ),
                         const SizedBox(height: 4),
                         const Text(
-                          'tell here actual product need , quantity , timeline deadline , deminsion or any specification',
+                          '"Need 500 handwoven natural bamboo fruit baskets, 10-inch diameter, delivery in Delhi within 3 weeks with food-grade polish."',
                           style: TextStyle(
                             fontSize: 12,
                             color: Color(0xFF7A6D66),

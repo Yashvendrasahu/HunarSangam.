@@ -383,6 +383,7 @@ class _OnboardingFlowCoordinatorState extends State<OnboardingFlowCoordinator> {
         onOpenDiscover: () => setState(() => _buyerStep = 6),
         onOpenOrders: () => setState(() => _buyerStep = 20),
         onOpenProfile: () => setState(() => _buyerStep = 21),
+        onViewDetails: (reqId) => setState(() => _buyerStep = 17),
       );
     }
 
@@ -473,11 +474,13 @@ class _OnboardingFlowCoordinatorState extends State<OnboardingFlowCoordinator> {
     if (_buyerStep == 19) {
       return BuyerSelectedArtisanScreen(
         onBack: () => setState(() => _buyerStep = 17),
-        onSelectAndReviewOrder: () => setState(() => _buyerStep = 12),
-        onMessageArtisan: () => setState(() => _buyerStep = 12),
+        onSelectAndReviewOrder: () => setState(() => _buyerStep = 20),
+        onMessageArtisan: () => setState(() => _buyerStep = 23),
         onOpenRequirements: () => setState(() => _buyerStep = 12),
         onOpenDiscover: () => setState(() => _buyerStep = 6),
         onOpenHome: () => setState(() => _buyerStep = 5),
+        onOpenOrders: () => setState(() => _buyerStep = 20),
+        onOpenProfile: () => setState(() => _buyerStep = 21),
       );
     }
 

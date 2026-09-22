@@ -271,19 +271,21 @@ class BuyerMatchedArtisansScreen extends StatelessWidget {
     const borderBeige = Color(0xFFEDE4DC);
     const textDark = Color(0xFF1E1714);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: borderBeige),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
+    return GestureDetector(
+      onTap: () => onViewArtisan(id),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: borderBeige),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -417,6 +419,7 @@ class BuyerMatchedArtisansScreen extends StatelessWidget {
             ],
           ),
         ],
+      ),
       ),
     );
   }
