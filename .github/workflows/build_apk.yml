@@ -56,6 +56,7 @@ jobs:
           BUILD_MODE="${{ github.event.inputs.build_type || 'release' }}"
           echo "Building APK in $BUILD_MODE mode..."
           flutter build apk --$BUILD_MODE \
+            --android-skip-build-dependency-validation \
             --dart-define=GEMINI_API_KEY="${{ secrets.GEMINI_API_KEY }}" \
             --dart-define=SUPABASE_URL="${{ secrets.SUPABASE_URL }}" \
             --dart-define=SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}"
