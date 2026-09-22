@@ -1,0 +1,9 @@
+{
+  "name": "HunarSangam Craft Maker & Bulk Buyer Platform",
+  "description": "Standalone Flutter Android application for HunarSangam Craft Maker and Bulk Buyer platform, communicating directly with Supabase and Google Gemini API.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
