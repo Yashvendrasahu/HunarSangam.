@@ -65,7 +65,11 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
 
     ImageProvider photoProvider;
     if (_localPhotoPath != null) {
-      photoProvider = FileImage(File(_localPhotoPath!));
+      if (kIsWeb) {
+        photoProvider = NetworkImage(_localPhotoPath!);
+      } else {
+        photoProvider = FileImage(File(_localPhotoPath!));
+      }
     } else {
       photoProvider = NetworkImage(defaultUrl);
     }

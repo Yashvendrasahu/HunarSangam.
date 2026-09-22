@@ -256,6 +256,7 @@ class _VoiceIntroScreenState extends State<VoiceIntroScreen> with SingleTickerPr
                     // Tap to speak instruction
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           _isListening ? Icons.graphic_eq_rounded : Icons.mic_none_rounded,
@@ -263,12 +264,15 @@ class _VoiceIntroScreenState extends State<VoiceIntroScreen> with SingleTickerPr
                           color: _isListening ? Colors.red : const Color(0xFFA84318),
                         ),
                         const SizedBox(width: 6.0),
-                        Text(
-                          _isListening ? 'Listening now... Speak your story' : 'Tap the microphone and speak naturally.',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w700,
-                            color: _isListening ? Colors.red : const Color(0xFFA84318),
+                        Flexible(
+                          child: Text(
+                            _isListening ? 'Listening now... Speak your story' : 'Tap the microphone and speak naturally.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.w700,
+                              color: _isListening ? Colors.red : const Color(0xFFA84318),
+                            ),
                           ),
                         ),
                       ],

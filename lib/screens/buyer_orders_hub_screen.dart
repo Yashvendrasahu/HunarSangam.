@@ -54,12 +54,15 @@ class _BuyerOrdersHubScreenState extends State<BuyerOrdersHubScreen> {
           children: const [
             HunarSangamLogoBadge(size: 26.0),
             SizedBox(width: 8.0),
-            Text(
-              'Orders & Production',
-              style: TextStyle(
-                color: primaryRust,
-                fontWeight: FontWeight.w900,
-                fontSize: 18,
+            Flexible(
+              child: Text(
+                'Orders & Production',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: primaryRust,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 18,
+                ),
               ),
             ),
           ],
@@ -552,12 +555,17 @@ class _BuyerOrdersHubScreenState extends State<BuyerOrdersHubScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (footerNote != null)
-                  Text(
-                    footerNote,
-                    style: const TextStyle(
-                      color: Color(0xFF7A6A60),
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w600,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Text(
+                        footerNote,
+                        style: const TextStyle(
+                          color: Color(0xFF7A6A60),
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
                 OutlinedButton(

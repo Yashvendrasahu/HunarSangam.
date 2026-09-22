@@ -64,18 +64,21 @@ class ActionButton extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               if (footerIcon != null) ...[
                 Icon(footerIcon, size: 14, color: const Color(0xFF8D6E63)),
                 const SizedBox(width: 4),
               ],
-              Text(
-                footerNote!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: Color(0xFF8D6E63),
-                  fontWeight: FontWeight.w500,
+              Flexible(
+                child: Text(
+                  footerNote!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Color(0xFF8D6E63),
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
@@ -98,17 +101,23 @@ class ActionButton extends StatelessWidget {
     }
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         if (icon != null) ...[
           Icon(icon, size: 20),
           const SizedBox(width: 8),
         ],
-        Text(
-          text,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 0.2,
+        Flexible(
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.2,
+            ),
           ),
         ),
       ],

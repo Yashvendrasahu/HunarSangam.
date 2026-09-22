@@ -1,0 +1,79 @@
+name: Build Flutter Android APK
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build Type'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+          - release
+          - debug
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Check Flutter Environment
+        run: flutter doctor -v
+
+      - name: Install Flutter Dependencies
+        run: flutter pub get
+
+      - name: Build Android APK
+        run: |
+          BUILD_MODE="${{ github.event.inputs.build_type || 'release' }}"
+          echo "Building APK in $BUILD_MODE mode..."
+          flutter build apk --$BUILD_MODE \
+            --dart-define=GEMINI_API_KEY="${{ secrets.GEMINI_API_KEY }}" \
+            --dart-define=SUPABASE_URL="${{ secrets.SUPABASE_URL }}" \
+            --dart-define=SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}"
+
+      - name: Prepare APK Output
+        run: |
+          BUILD_MODE="${{ github.event.inputs.build_type || 'release' }}"
+          mkdir -p output
+          if [ -f "build/app/outputs/flutter-apk/app-$BUILD_MODE.apk" ]; then
+            cp "build/app/outputs/flutter-apk/app-$BUILD_MODE.apk" "output/hunarsangam-$BUILD_MODE.apk"
+          elif [ -f "build/app/outputs/flutter-apk/app-release.apk" ]; then
+            cp "build/app/outputs/flutter-apk/app-release.apk" "output/hunarsangam-release.apk"
+          fi
+          ls -la output/
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: HunarSangam-APK
+          path: output/*.apk
+          retention-days: 30

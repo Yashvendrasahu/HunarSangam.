@@ -1,6 +1,6 @@
 // lib/services/supabase_service.dart
 
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'supabase_config.dart';
@@ -270,15 +270,14 @@ class SupabaseService {
     }
   }
 
-  /// Upload file to Supabase storage bucket (e.g. product-images, artisan-profiles)
-  Future<String?> uploadStorageFile({
-    required File file,
+  /// Upload bytes or binary payload to Supabase storage bucket (e.g. product-images, artisan-profiles)
+  Future<String?> uploadStorageBytes({
+    required Uint8List bytes,
     required String bucketName,
     required String destinationPath,
   }) async {
     if (_isLive && client != null) {
       try {
-        final bytes = await file.readAsBytes();
         await client!.storage.from(bucketName).uploadBinary(
           destinationPath,
           bytes,
