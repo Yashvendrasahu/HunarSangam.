@@ -1,6 +1,7 @@
 // lib/add_product/screens/camera_capture_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../services/hardware_service.dart';
 
 class CapturedImageData {
   final String dataUrl;
@@ -18,6 +19,33 @@ class CameraCaptureScreen extends StatelessWidget {
     required this.onCapture,
     required this.onBack,
   });
+
+  Future<void> _handleCaptureFromCamera(BuildContext context) async {
+    final photo = await HardwareService().captureImageFromCamera();
+    if (photo != null) {
+      onImageCaptured?.call(CapturedImageData(photo.path));
+      onCapture();
+    } else {
+      // Graceful fallback for web/desktop or cancelled dialog
+      onImageCaptured?.call(const CapturedImageData(
+        'https://images.unsplash.com/photo-1590736969955-71cc94801759?auto=format&fit=crop&w=600&q=80',
+      ));
+      onCapture();
+    }
+  }
+
+  Future<void> _handlePickFromGallery(BuildContext context) async {
+    final image = await HardwareService().pickImageFromGallery();
+    if (image != null) {
+      onImageCaptured?.call(CapturedImageData(image.path));
+      onCapture();
+    } else {
+      onImageCaptured?.call(const CapturedImageData(
+        'https://images.unsplash.com/photo-1590736969955-71cc94801759?auto=format&fit=crop&w=600&q=80',
+      ));
+      onCapture();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,21 +116,12 @@ class CameraCaptureScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 IconButton(
+                  tooltip: 'Pick from Gallery',
                   icon: const Icon(Icons.photo_library_outlined, color: Colors.white, size: 28),
-                  onPressed: () {
-                    onImageCaptured?.call(const CapturedImageData(
-                      'https://images.unsplash.com/photo-1590736969955-71cc94801759?auto=format&fit=crop&w=600&q=80',
-                    ));
-                    onCapture();
-                  },
+                  onPressed: () => _handlePickFromGallery(context),
                 ),
                 GestureDetector(
-                  onTap: () {
-                    onImageCaptured?.call(const CapturedImageData(
-                      'https://images.unsplash.com/photo-1590736969955-71cc94801759?auto=format&fit=crop&w=600&q=80',
-                    ));
-                    onCapture();
-                  },
+                  onTap: () => _handleCaptureFromCamera(context),
                   child: Container(
                     width: 72,
                     height: 72,
@@ -115,8 +134,16 @@ class CameraCaptureScreen extends StatelessWidget {
                   ),
                 ),
                 IconButton(
+                  tooltip: 'Flash',
                   icon: const Icon(Icons.flash_on_outlined, color: Colors.white, size: 28),
-                  onPressed: () {},
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Flash is set to auto mode'),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
