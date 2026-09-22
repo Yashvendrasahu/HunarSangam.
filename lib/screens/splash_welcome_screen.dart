@@ -157,8 +157,64 @@ class _SplashWelcomeScreenState extends State<SplashWelcomeScreen> {
             // Foreground Layout Content
             Column(
               children: [
-                // Top Header Bar
-                const TopHeaderBar(),
+                // Top Header Bar with SIH INITIATIVE and AI Helped craft badges
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // SIH INITIATIVE badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF3E7DF),
+                          borderRadius: BorderRadius.circular(16.0),
+                          border: Border.all(color: const Color(0xFFE5D5CB), width: 1.0),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 6.5,
+                              height: 6.5,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF2E7D32),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 5.0),
+                            const Text(
+                              'SIH INITIATIVE',
+                              style: TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF5A483E),
+                                letterSpacing: 0.4,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // AI Helped craft badge
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Icon(Icons.palette_outlined, size: 14.5, color: Color(0xFF6B584E)),
+                          SizedBox(width: 4.0),
+                          Text(
+                            'AI Helped craft',
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF6B584E),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
 
                 // Scrollable Central Body to adapt gracefully to any screen height
                 Expanded(
@@ -194,7 +250,7 @@ class _SplashWelcomeScreenState extends State<SplashWelcomeScreen> {
 
                           // Subtitle Headline
                           const Text(
-                            'Where Craft Makers Connect,\nCollaborate & Grow',
+                            'Where Artisans Connect,\nCollaborate & Grow',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 17.5,

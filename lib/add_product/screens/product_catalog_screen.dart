@@ -33,7 +33,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
   final List<String> _filters = [
     'All (8)',
     'Published (6)',
-    '🟢 ONDC Synced (5)',
+    'ONDC Synced (5)',
     'Drafts (2)',
   ];
 
@@ -54,54 +54,104 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFDFBF9),
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            // Top App Bar
-            _buildTopAppBar(),
+            Column(
+              children: [
+                // Top App Bar
+                _buildTopAppBar(),
 
-            // Scrollable catalog body
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header card: "My Products" + Assam Cluster + Ramu Kumar Verified
-                    _buildClusterCard(),
+                // Scrollable catalog body
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Header card: "My Products" + Assam Cluster + Ramu Kumar Verified
+                        _buildClusterCard(),
 
-                    const SizedBox(height: 12.0),
+                        const SizedBox(height: 12.0),
 
-                    // 4 Stat Cards in 2x2 grid
-                    _buildStatsGrid(),
+                        // 4 Stat Cards in 2x2 grid
+                        _buildStatsGrid(),
 
-                    const SizedBox(height: 14.0),
+                        const SizedBox(height: 14.0),
 
-                    // Primary Big Orange CTA: "Add products by clicking 🎙️"
-                    _buildAddProductButton(),
+                        // Primary Pill CTA: "Add products ➔" with mic circle
+                        _buildAddProductButton(),
 
-                    const SizedBox(height: 12.0),
+                        const SizedBox(height: 12.0),
 
-                    // Voice Search Input Bar
-                    _buildSearchBar(),
+                        // Voice Search Input Bar
+                        _buildSearchBar(),
 
-                    const SizedBox(height: 12.0),
+                        const SizedBox(height: 12.0),
 
-                    // Filter tabs row
-                    _buildFilterTabs(),
+                        // Filter tabs row
+                        _buildFilterTabs(),
 
-                    const SizedBox(height: 14.0),
+                        const SizedBox(height: 14.0),
 
-                    // Product Cards
-                    _buildProductCard1(),
-                    const SizedBox(height: 14.0),
-                    _buildProductCard2(),
-                    const SizedBox(height: 14.0),
-                    _buildProductCard3(),
-                    const SizedBox(height: 14.0),
-                    _buildProductCard4(),
-                    const SizedBox(height: 24.0),
-                  ],
+                        // Product Cards
+                        _buildProductCard1(),
+                        const SizedBox(height: 14.0),
+                        _buildProductCard2(),
+                        const SizedBox(height: 14.0),
+                        _buildProductCard3(),
+                        const SizedBox(height: 14.0),
+                        _buildProductCard4(),
+                        const SizedBox(height: 80.0), // Space for floating CTA
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            // Floating Pill: "+ Add Product (Voice-First 🎙)"
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 16.0,
+              child: Center(
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: widget.onStartAddProduct,
+                    borderRadius: BorderRadius.circular(28.0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF8C3A16),
+                        borderRadius: BorderRadius.circular(28.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF8C3A16).withValues(alpha: 0.35),
+                            blurRadius: 10.0,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Icon(Icons.mic_rounded, color: Colors.white, size: 18.0),
+                          SizedBox(width: 6.0),
+                          Text(
+                            '+ Add Product (Voice-First 🎙)',
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              letterSpacing: 0.1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -474,42 +524,50 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
     );
   }
 
-  // 4. Big Orange Action CTA
+  // 4. Pill Action CTA: Add products
   Widget _buildAddProductButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 52.0,
-      child: ElevatedButton(
-        onPressed: widget.onStartAddProduct,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFFF4500),
-          foregroundColor: Colors.white,
-          elevation: 2,
-          shadowColor: const Color(0xFFFF4500).withValues(alpha: 0.3),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(26.0),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: widget.onStartAddProduct,
+        borderRadius: BorderRadius.circular(28.0),
+        child: Container(
+          width: double.infinity,
+          height: 48.0,
+          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFBF2EE),
+            borderRadius: BorderRadius.circular(28.0),
+            border: Border.all(color: const Color(0xFFE5D5CB), width: 1.2),
           ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Add products by clicking',
-              style: TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.w700,
+          child: Row(
+            children: [
+              Container(
+                width: 38.0,
+                height: 38.0,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF7C3F24),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.mic_rounded, color: Colors.white, size: 20.0),
               ),
-            ),
-            const SizedBox(width: 8.0),
-            Container(
-              padding: const EdgeInsets.all(5.0),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.25),
-                shape: BoxShape.circle,
+              const SizedBox(width: 14.0),
+              const Expanded(
+                child: Text(
+                  'Add products',
+                  style: TextStyle(
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF221C19),
+                  ),
+                ),
               ),
-              child: const Icon(Icons.mic_rounded, color: Colors.white, size: 18.0),
-            ),
-          ],
+              const Padding(
+                padding: EdgeInsets.only(right: 12.0),
+                child: Icon(Icons.arrow_forward_rounded, color: Color(0xFF221C19), size: 20.0),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -519,38 +577,39 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
   Widget _buildSearchBar() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF3EAE3),
-        borderRadius: BorderRadius.circular(24.0),
-        border: Border.all(color: const Color(0xFFE5D5CB)),
+        color: const Color(0xFFFBF2EE),
+        borderRadius: BorderRadius.circular(28.0),
+        border: Border.all(color: const Color(0xFFE5D5CB), width: 1.2),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8.0),
+            width: 38.0,
+            height: 38.0,
             decoration: const BoxDecoration(
               color: Color(0xFF7C3F24),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.mic_rounded, color: Colors.white, size: 16.0),
+            child: const Icon(Icons.mic_rounded, color: Colors.white, size: 20.0),
           ),
-          const SizedBox(width: 10.0),
+          const SizedBox(width: 12.0),
           Expanded(
             child: TextField(
               controller: _searchController,
-              style: const TextStyle(fontSize: 13.0, color: Color(0xFF2D2421)),
+              style: const TextStyle(fontSize: 13.5, color: Color(0xFF2D2421)),
               decoration: const InputDecoration(
                 hintText: 'Tap to speak or search crafts...',
-                hintStyle: TextStyle(fontSize: 12.5, color: Color(0xFF7A685F)),
+                hintStyle: TextStyle(fontSize: 13.0, color: Color(0xFF7A685F)),
                 border: InputBorder.none,
                 isDense: true,
               ),
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.tune_rounded, color: Color(0xFF7A685F), size: 18.0),
+            icon: const Icon(Icons.tune_rounded, color: Color(0xFF7A685F), size: 20.0),
             onPressed: () {},
-            splashRadius: 18.0,
+            splashRadius: 20.0,
           ),
         ],
       ),
@@ -565,6 +624,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
       child: Row(
         children: List.generate(_filters.length, (index) {
           final isSelected = _selectedFilterIndex == index;
+          final isOndc = index == 2;
           return Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: GestureDetector(
@@ -582,13 +642,29 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                     color: isSelected ? const Color(0xFF8C3A16) : const Color(0xFFEADFD6),
                   ),
                 ),
-                child: Text(
-                  _filters[index],
-                  style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected ? Colors.white : const Color(0xFF4A372D),
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isOndc && !isSelected) ...[
+                      Container(
+                        width: 6.0,
+                        height: 6.0,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF2E7D32),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 5.0),
+                    ],
+                    Text(
+                      _filters[index],
+                      style: TextStyle(
+                        fontSize: 12.0,
+                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        color: isSelected ? Colors.white : const Color(0xFF4A372D),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
