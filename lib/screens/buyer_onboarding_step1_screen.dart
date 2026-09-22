@@ -466,6 +466,15 @@ class _BuyerOnboardingStep1ScreenState
             ],
           ),
         ),
+        const SizedBox(height: 4.0),
+        const Text(
+          '✉️ A verification link will be sent to this email address to verify your organization.',
+          style: TextStyle(
+            fontSize: 11,
+            color: Color(0xFF9C3C18),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }

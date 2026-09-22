@@ -50,13 +50,101 @@ class _AccountCreationScreenState extends State<AccountCreationScreen> {
   }
 
   void _submit() {
+    final email = _emailController.text.trim();
     widget.onStateChanged(widget.state.copyWith(
       artisanName: _nameController.text.trim().isNotEmpty ? _nameController.text.trim() : 'Ramu Kumar',
       phoneNumber: _phoneController.text.trim().isNotEmpty ? _phoneController.text.trim() : '+91 98765 43210',
-      email: _emailController.text.trim(),
+      email: email,
       password: _passwordController.text.trim(),
     ));
-    widget.onContinue();
+
+    if (email.isNotEmpty && email.contains('@')) {
+      _showEmailVerificationNotice(email);
+    } else {
+      widget.onContinue();
+    }
+  }
+
+  void _showEmailVerificationNotice(String email) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        title: Row(
+          children: const [
+            Icon(Icons.mark_email_read_outlined, color: Color(0xFFA84318), size: 28),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Verify Your Email',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2D2421),
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'A verification link has been sent to:',
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
+            ),
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFBF4EE),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFEADFD6)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.email_outlined, color: Color(0xFFA84318), size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      email,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFA84318),
+                        fontSize: 13.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              '📩 Please check your inbox or spam folder and tap the confirmation link to activate your maker profile.',
+              style: TextStyle(fontSize: 12.5, height: 1.4, color: Color(0xFF4A3B32)),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              widget.onContinue();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFA84318),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+            ),
+            child: const Text('Got It / समझ गया (Continue)', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -81,7 +169,14 @@ class _AccountCreationScreenState extends State<AccountCreationScreen> {
               const SizedBox(height: 14),
               _buildInputField('Mobile Number / फ़ोन नंबर', _phoneController, '+91 98765 43210', Icons.phone_outlined, keyboardType: TextInputType.phone),
               const SizedBox(height: 14),
-              _buildInputField('Email (Optional)', _emailController, 'artisan@hunarsangam.in', Icons.email_outlined, keyboardType: TextInputType.emailAddress),
+              _buildInputField(
+                'Email (Optional) / ईमेल पता',
+                _emailController,
+                'artisan@hunarsangam.in',
+                Icons.email_outlined,
+                keyboardType: TextInputType.emailAddress,
+                helperText: '✉️ We will send an account verification link to this email.',
+              ),
               const SizedBox(height: 14),
               _buildInputField('Create PIN / Password', _passwordController, '••••••••', Icons.lock_outline, obscureText: true),
               const SizedBox(height: 24),
@@ -117,6 +212,7 @@ class _AccountCreationScreenState extends State<AccountCreationScreen> {
     IconData icon, {
     TextInputType keyboardType = TextInputType.text,
     bool obscureText = false,
+    String? helperText,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,6 +250,17 @@ class _AccountCreationScreenState extends State<AccountCreationScreen> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           ),
         ),
+        if (helperText != null) ...[
+          const SizedBox(height: 4),
+          Text(
+            helperText,
+            style: const TextStyle(
+              fontSize: 11.5,
+              color: Color(0xFFA84318),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ],
     );
   }
