@@ -1,9 +1,11 @@
 // lib/screens/account_creation_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/onboarding_state.dart';
 import '../services/auth_service.dart';
 import '../services/supabase_config.dart';
+import '../utils/input_validators.dart';
 import '../widgets/onboarding_header.dart';
 import '../widgets/action_button.dart';
 
@@ -33,6 +35,12 @@ class _AccountCreationScreenState extends State<AccountCreationScreen> {
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
 
+  String? _nameError;
+  String? _phoneError;
+  String? _emailError;
+  String? _passwordError;
+  bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -51,13 +59,40 @@ class _AccountCreationScreenState extends State<AccountCreationScreen> {
     super.dispose();
   }
 
-  bool _isLoading = false;
+  bool _validateAllFields() {
+    final nameErr = InputValidators.validateName(_nameController.text, fieldName: 'Full Name / नाम');
+    final phoneErr = InputValidators.validatePhone(_phoneController.text);
+    final emailErr = _emailController.text.trim().isNotEmpty
+        ? InputValidators.validateEmail(_emailController.text, required: false)
+        : null;
+    final passErr = InputValidators.validatePassword(_passwordController.text, minLength: 6);
+
+    setState(() {
+      _nameError = nameErr;
+      _phoneError = phoneErr;
+      _emailError = emailErr;
+      _passwordError = passErr;
+    });
+
+    return nameErr == null && phoneErr == null && emailErr == null && passErr == null;
+  }
 
   void _submit() async {
+    if (!_validateAllFields()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('⚠️ Please fix the errors in highlighted fields before continuing / कृपया सही जानकारी भरें'),
+          backgroundColor: Color(0xFFC62828),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
     final email = _emailController.text.trim();
-    final name = _nameController.text.trim().isNotEmpty ? _nameController.text.trim() : 'Ramu Kumar';
-    final phone = _phoneController.text.trim().isNotEmpty ? _phoneController.text.trim() : '+91 98765 43210';
-    final password = _passwordController.text.trim().isNotEmpty ? _passwordController.text.trim() : 'Artisan@123';
+    final name = _nameController.text.trim();
+    final phone = _phoneController.text.trim();
+    final password = _passwordController.text.trim();
 
     setState(() => _isLoading = true);
 
@@ -189,9 +224,33 @@ class _AccountCreationScreenState extends State<AccountCreationScreen> {
                 onBack: widget.onBack,
               ),
               const SizedBox(height: 20),
-              _buildInputField('Full Name / कारीगर का नाम', _nameController, 'e.g. Ramu Kumar', Icons.person_outline),
+              _buildInputField(
+                'Full Name / कारीगर का नाम',
+                _nameController,
+                'e.g. Ramu Kumar',
+                Icons.person_outline,
+                errorText: _nameError,
+                onChanged: (val) {
+                  if (_nameError != null) {
+                    setState(() => _nameError = InputValidators.validateName(val, fieldName: 'Full Name / नाम'));
+                  }
+                },
+              ),
               const SizedBox(height: 14),
-              _buildInputField('Mobile Number / फ़ोन नंबर', _phoneController, '+91 98765 43210', Icons.phone_outlined, keyboardType: TextInputType.phone),
+              _buildInputField(
+                'Mobile Number / फ़ोन नंबर',
+                _phoneController,
+                '+91 98765 43210',
+                Icons.phone_outlined,
+                keyboardType: TextInputType.phone,
+                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d\+\s\-]'))],
+                errorText: _phoneError,
+                onChanged: (val) {
+                  if (_phoneError != null) {
+                    setState(() => _phoneError = InputValidators.validatePhone(val));
+                  }
+                },
+              ),
               const SizedBox(height: 14),
               _buildInputField(
                 'Email (Optional) / ईमेल पता',
@@ -199,10 +258,28 @@ class _AccountCreationScreenState extends State<AccountCreationScreen> {
                 'artisan@hunarsangam.in',
                 Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
+                errorText: _emailError,
+                onChanged: (val) {
+                  if (_emailError != null) {
+                    setState(() => _emailError = val.isNotEmpty ? InputValidators.validateEmail(val, required: false) : null);
+                  }
+                },
                 helperText: '✉️ We will send an account verification link to this email.',
               ),
               const SizedBox(height: 14),
-              _buildInputField('Create PIN / Password', _passwordController, '••••••••', Icons.lock_outline, obscureText: true),
+              _buildInputField(
+                'Create PIN / Password',
+                _passwordController,
+                '••••••••',
+                Icons.lock_outline,
+                obscureText: true,
+                errorText: _passwordError,
+                onChanged: (val) {
+                  if (_passwordError != null) {
+                    setState(() => _passwordError = InputValidators.validatePassword(val, minLength: 6));
+                  }
+                },
+              ),
               const SizedBox(height: 14),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -272,16 +349,21 @@ class _AccountCreationScreenState extends State<AccountCreationScreen> {
     TextInputType keyboardType = TextInputType.text,
     bool obscureText = false,
     String? helperText,
+    String? errorText,
+    List<TextInputFormatter>? inputFormatters,
+    ValueChanged<String>? onChanged,
   }) {
+    final hasError = errorText != null && errorText.isNotEmpty;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF2D2421),
+            color: hasError ? const Color(0xFFC62828) : const Color(0xFF2D2421),
           ),
         ),
         const SizedBox(height: 6),
@@ -289,27 +371,59 @@ class _AccountCreationScreenState extends State<AccountCreationScreen> {
           controller: controller,
           keyboardType: keyboardType,
           obscureText: obscureText,
+          inputFormatters: inputFormatters,
+          onChanged: onChanged,
           decoration: InputDecoration(
             hintText: hint,
-            prefixIcon: Icon(icon, color: const Color(0xFFA84318), size: 20),
+            prefixIcon: Icon(
+              icon,
+              color: hasError ? const Color(0xFFC62828) : const Color(0xFFA84318),
+              size: 20,
+            ),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: hasError ? const Color(0xFFFFF5F5) : Colors.white,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFEADFD6)),
+              borderSide: BorderSide(
+                color: hasError ? const Color(0xFFE57373) : const Color(0xFFEADFD6),
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFEADFD6)),
+              borderSide: BorderSide(
+                color: hasError ? const Color(0xFFE57373) : const Color(0xFFEADFD6),
+                width: hasError ? 1.5 : 1.0,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFA84318), width: 1.5),
+              borderSide: BorderSide(
+                color: hasError ? const Color(0xFFC62828) : const Color(0xFFA84318),
+                width: 1.5,
+              ),
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           ),
         ),
-        if (helperText != null) ...[
+        if (hasError) ...[
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              const Icon(Icons.error_outline, size: 13, color: Color(0xFFC62828)),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  errorText,
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    color: Color(0xFFC62828),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ] else if (helperText != null) ...[
           const SizedBox(height: 4),
           Text(
             helperText,

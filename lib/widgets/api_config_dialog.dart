@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../services/supabase_config.dart';
 import '../services/supabase_service.dart';
 import '../services/gemini_service.dart';
+import '../utils/input_validators.dart';
 
 class ApiConfigDialog extends StatefulWidget {
   const ApiConfigDialog({super.key});
@@ -34,6 +35,10 @@ class _ApiConfigDialogState extends State<ApiConfigDialog> {
   bool? _geminiOk;
   bool _isSaving = false;
 
+  String? _supabaseUrlError;
+  String? _supabaseKeyError;
+  String? _geminiKeyError;
+
   @override
   void initState() {
     super.initState();
@@ -61,7 +66,45 @@ class _ApiConfigDialogState extends State<ApiConfigDialog> {
     super.dispose();
   }
 
+  bool _validateInputs() {
+    final url = _supabaseUrlController.text.trim();
+    final key = _supabaseKeyController.text.trim();
+    final gemini = _geminiKeyController.text.trim();
+
+    String? urlErr;
+    if (url.isNotEmpty) {
+      urlErr = InputValidators.validateUrl(url, required: false);
+    }
+
+    String? keyErr;
+    if (key.isNotEmpty && key.length < 15) {
+      keyErr = '❌ Invalid Anon Key (minimum 15 characters required)';
+    }
+
+    String? geminiErr;
+    if (gemini.isNotEmpty && gemini.length < 8) {
+      geminiErr = '❌ Invalid Gemini API key (minimum 8 characters required)';
+    }
+
+    setState(() {
+      _supabaseUrlError = urlErr;
+      _supabaseKeyError = keyErr;
+      _geminiKeyError = geminiErr;
+    });
+
+    return urlErr == null && keyErr == null && geminiErr == null;
+  }
+
   Future<void> _testSupabase() async {
+    final url = _supabaseUrlController.text.trim();
+    if (url.isNotEmpty) {
+      final urlErr = InputValidators.validateUrl(url, required: true);
+      if (urlErr != null) {
+        setState(() => _supabaseUrlError = urlErr);
+        return;
+      }
+    }
+
     setState(() {
       _isTestingSupabase = true;
       _supabaseStatus = 'Testing Supabase connection...';
@@ -76,6 +119,12 @@ class _ApiConfigDialogState extends State<ApiConfigDialog> {
   }
 
   Future<void> _testGemini() async {
+    final gemini = _geminiKeyController.text.trim();
+    if (gemini.isNotEmpty && gemini.length < 8) {
+      setState(() => _geminiKeyError = '❌ Invalid Gemini API key (too short)');
+      return;
+    }
+
     setState(() {
       _isTestingGemini = true;
       _geminiStatus = 'Testing Gemini AI generation...';
@@ -90,6 +139,17 @@ class _ApiConfigDialogState extends State<ApiConfigDialog> {
   }
 
   Future<void> _saveAndApply() async {
+    if (!_validateInputs()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('⚠️ Please fix invalid field values before saving / कृपया सही मान दर्ज करें'),
+          backgroundColor: Color(0xFFC62828),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isSaving = true;
     });
@@ -178,20 +238,20 @@ class _ApiConfigDialogState extends State<ApiConfigDialog> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.grey),
+                  icon: const Icon(Icons.close),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
             ),
             const SizedBox(height: 16),
 
-            // Live status banner
+            // Status Card
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF9F6F0),
+                color: const Color(0xFFFAF5F0),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE8DFD8)),
+                border: Border.all(color: const Color(0xFFEADFD6)),
               ),
               child: Column(
                 children: [
@@ -250,18 +310,27 @@ class _ApiConfigDialogState extends State<ApiConfigDialog> {
             TextField(
               controller: _supabaseUrlController,
               keyboardType: TextInputType.url,
+              onChanged: (val) {
+                if (_supabaseUrlError != null) {
+                  setState(() => _supabaseUrlError = val.isNotEmpty ? InputValidators.validateUrl(val, required: false) : null);
+                }
+              },
               decoration: InputDecoration(
                 hintText: 'https://xyzcompany.supabase.co',
                 filled: true,
-                fillColor: const Color(0xFFFBF9F7),
-                prefixIcon: const Icon(Icons.link, size: 20, color: Colors.grey),
+                fillColor: _supabaseUrlError != null ? const Color(0xFFFFF5F5) : const Color(0xFFFBF9F7),
+                prefixIcon: Icon(Icons.link, size: 20, color: _supabaseUrlError != null ? const Color(0xFFC62828) : Colors.grey),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
+                  borderSide: BorderSide(color: _supabaseUrlError != null ? const Color(0xFFC62828) : Colors.grey.shade300),
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               ),
             ),
+            if (_supabaseUrlError != null) ...[
+              const SizedBox(height: 4),
+              Text(_supabaseUrlError!, style: const TextStyle(fontSize: 11.5, color: Color(0xFFC62828), fontWeight: FontWeight.w600)),
+            ],
             const SizedBox(height: 14),
 
             // Supabase Anon Key
@@ -272,18 +341,27 @@ class _ApiConfigDialogState extends State<ApiConfigDialog> {
             const SizedBox(height: 6),
             TextField(
               controller: _supabaseKeyController,
+              onChanged: (val) {
+                if (_supabaseKeyError != null) {
+                  setState(() => _supabaseKeyError = null);
+                }
+              },
               decoration: InputDecoration(
                 hintText: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
                 filled: true,
-                fillColor: const Color(0xFFFBF9F7),
-                prefixIcon: const Icon(Icons.key, size: 20, color: Colors.grey),
+                fillColor: _supabaseKeyError != null ? const Color(0xFFFFF5F5) : const Color(0xFFFBF9F7),
+                prefixIcon: Icon(Icons.key, size: 20, color: _supabaseKeyError != null ? const Color(0xFFC62828) : Colors.grey),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
+                  borderSide: BorderSide(color: _supabaseKeyError != null ? const Color(0xFFC62828) : Colors.grey.shade300),
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               ),
             ),
+            if (_supabaseKeyError != null) ...[
+              const SizedBox(height: 4),
+              Text(_supabaseKeyError!, style: const TextStyle(fontSize: 11.5, color: Color(0xFFC62828), fontWeight: FontWeight.w600)),
+            ],
             const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerRight,
@@ -307,18 +385,27 @@ class _ApiConfigDialogState extends State<ApiConfigDialog> {
             TextField(
               controller: _geminiKeyController,
               obscureText: true,
+              onChanged: (val) {
+                if (_geminiKeyError != null) {
+                  setState(() => _geminiKeyError = null);
+                }
+              },
               decoration: InputDecoration(
                 hintText: 'AIzaSy...',
                 filled: true,
-                fillColor: const Color(0xFFFBF9F7),
-                prefixIcon: const Icon(Icons.auto_awesome, size: 20, color: Color(0xFFA84318)),
+                fillColor: _geminiKeyError != null ? const Color(0xFFFFF5F5) : const Color(0xFFFBF9F7),
+                prefixIcon: Icon(Icons.auto_awesome, size: 20, color: _geminiKeyError != null ? const Color(0xFFC62828) : const Color(0xFFA84318)),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
+                  borderSide: BorderSide(color: _geminiKeyError != null ? const Color(0xFFC62828) : Colors.grey.shade300),
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               ),
             ),
+            if (_geminiKeyError != null) ...[
+              const SizedBox(height: 4),
+              Text(_geminiKeyError!, style: const TextStyle(fontSize: 11.5, color: Color(0xFFC62828), fontWeight: FontWeight.w600)),
+            ],
             const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerRight,

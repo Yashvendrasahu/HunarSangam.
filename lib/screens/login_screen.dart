@@ -1,11 +1,13 @@
 // lib/screens/login_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/onboarding_state.dart';
 import '../models/buyer_onboarding_model.dart';
 import '../services/auth_service.dart';
 import '../services/supabase_service.dart';
 import '../services/supabase_config.dart';
+import '../utils/input_validators.dart';
 import '../widgets/brand_logo_card.dart';
 import '../widgets/api_config_dialog.dart';
 import 'artisan_home_screen.dart';
@@ -161,8 +163,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleSendOtp() async {
     final contact = _contactController.text.trim();
-    if (contact.isEmpty) {
-      setState(() => _errorMessage = 'Please enter your phone number to receive OTP');
+    final phoneErr = InputValidators.validatePhone(contact);
+    if (phoneErr != null) {
+      setState(() => _errorMessage = phoneErr);
       return;
     }
 
@@ -206,21 +209,26 @@ class _LoginScreenState extends State<LoginScreen> {
     FocusScope.of(context).unfocus();
     final contact = _contactController.text.trim();
 
-    if (contact.isEmpty) {
-      setState(() => _errorMessage = 'Please enter your email or phone number');
+    final contactErr = _useOtpMode
+        ? InputValidators.validatePhone(contact)
+        : InputValidators.validateContact(contact);
+    if (contactErr != null) {
+      setState(() => _errorMessage = contactErr);
       return;
     }
 
     if (_useOtpMode) {
       final otp = _otpController.text.trim();
-      if (otp.length < 4) {
-        setState(() => _errorMessage = 'Please enter the 6-digit OTP code');
+      final otpErr = InputValidators.validateOtp(otp);
+      if (otpErr != null) {
+        setState(() => _errorMessage = otpErr);
         return;
       }
     } else {
       final password = _passwordController.text.trim();
-      if (password.isEmpty) {
-        setState(() => _errorMessage = 'Please enter your password');
+      final passErr = InputValidators.validatePassword(password, minLength: 6);
+      if (passErr != null) {
+        setState(() => _errorMessage = passErr);
         return;
       }
     }
@@ -596,6 +604,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                     child: TextField(
                                       controller: _otpController,
                                       keyboardType: TextInputType.number,
+                                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                      onChanged: (val) {
+                                        if (_errorMessage != null) {
+                                          setState(() => _errorMessage = null);
+                                        }
+                                      },
                                       decoration: const InputDecoration(
                                         hintText: '6-digit OTP code',
                                         hintStyle: TextStyle(

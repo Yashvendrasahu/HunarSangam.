@@ -1,7 +1,9 @@
 // lib/screens/buyer_onboarding_step1_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/buyer_onboarding_model.dart';
+import '../utils/input_validators.dart';
 
 /// Screen: Bulk Buyer Registration - Step 1 of 3: Basic Details
 /// Exactly matches 'bulk buyer setp 1 register.png'
@@ -30,6 +32,11 @@ class _BuyerOnboardingStep1ScreenState
   late final TextEditingController _emailController;
   late bool _useWhatsApp;
   late BusinessType _selectedBusinessType;
+
+  String? _nameError;
+  String? _businessNameError;
+  String? _phoneError;
+  String? _emailError;
 
   static const Color _primaryRust = Color(0xFF9C3C18);
   static const Color _bgCanvas = Color(0xFFFDFBF9);
@@ -73,7 +80,34 @@ class _BuyerOnboardingStep1ScreenState
     super.dispose();
   }
 
+  bool _validateFields() {
+    final nameErr = InputValidators.validateName(_nameController.text, fieldName: 'Your Name');
+    final bizErr = InputValidators.validateBusinessName(_businessNameController.text);
+    final phoneErr = InputValidators.validatePhone(_phoneController.text);
+    final emailErr = InputValidators.validateEmail(_emailController.text, required: true);
+
+    setState(() {
+      _nameError = nameErr;
+      _businessNameError = bizErr;
+      _phoneError = phoneErr;
+      _emailError = emailErr;
+    });
+
+    return nameErr == null && bizErr == null && phoneErr == null && emailErr == null;
+  }
+
   void _handleContinue() {
+    if (!_validateFields()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('⚠️ Please fix the highlighted errors before continuing / कृपया सही जानकारी भरें'),
+          backgroundColor: Color(0xFFC62828),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
     final updatedModel = widget.initialModel.copyWith(
       yourName: _nameController.text.trim(),
       businessName: _businessNameController.text.trim(),
@@ -269,6 +303,7 @@ class _BuyerOnboardingStep1ScreenState
   }
 
   Widget _buildNameField() {
+    final hasErr = _nameError != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -276,19 +311,24 @@ class _BuyerOnboardingStep1ScreenState
         const SizedBox(height: 6.0),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: _borderSubtle),
+            color: hasErr ? const Color(0xFFFFF5F5) : Colors.white,
+            border: Border.all(color: hasErr ? const Color(0xFFC62828) : _borderSubtle, width: hasErr ? 1.5 : 1.0),
             borderRadius: BorderRadius.circular(12.0),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: Row(
             children: [
-              const Icon(Icons.person_outline, color: Color(0xFF8D6E63), size: 18),
+              Icon(Icons.person_outline, color: hasErr ? const Color(0xFFC62828) : const Color(0xFF8D6E63), size: 18),
               const SizedBox(width: 8.0),
               Expanded(
                 child: TextField(
                   controller: _nameController,
                   style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _textDark),
+                  onChanged: (val) {
+                    if (_nameError != null) {
+                      setState(() => _nameError = InputValidators.validateName(val, fieldName: 'Your Name'));
+                    }
+                  },
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                     isDense: true,
@@ -299,11 +339,19 @@ class _BuyerOnboardingStep1ScreenState
             ],
           ),
         ),
+        if (hasErr) ...[
+          const SizedBox(height: 4.0),
+          Text(
+            _nameError!,
+            style: const TextStyle(fontSize: 11.5, color: Color(0xFFC62828), fontWeight: FontWeight.w600),
+          ),
+        ],
       ],
     );
   }
 
   Widget _buildBusinessNameField() {
+    final hasErr = _businessNameError != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -311,19 +359,24 @@ class _BuyerOnboardingStep1ScreenState
         const SizedBox(height: 6.0),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: _borderSubtle),
+            color: hasErr ? const Color(0xFFFFF5F5) : Colors.white,
+            border: Border.all(color: hasErr ? const Color(0xFFC62828) : _borderSubtle, width: hasErr ? 1.5 : 1.0),
             borderRadius: BorderRadius.circular(12.0),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: Row(
             children: [
-              const Icon(Icons.storefront_outlined, color: Color(0xFF8D6E63), size: 18),
+              Icon(Icons.storefront_outlined, color: hasErr ? const Color(0xFFC62828) : const Color(0xFF8D6E63), size: 18),
               const SizedBox(width: 8.0),
               Expanded(
                 child: TextField(
                   controller: _businessNameController,
                   style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _textDark),
+                  onChanged: (val) {
+                    if (_businessNameError != null) {
+                      setState(() => _businessNameError = InputValidators.validateBusinessName(val));
+                    }
+                  },
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                     isDense: true,
@@ -334,11 +387,19 @@ class _BuyerOnboardingStep1ScreenState
             ],
           ),
         ),
+        if (hasErr) ...[
+          const SizedBox(height: 4.0),
+          Text(
+            _businessNameError!,
+            style: const TextStyle(fontSize: 11.5, color: Color(0xFFC62828), fontWeight: FontWeight.w600),
+          ),
+        ],
       ],
     );
   }
 
   Widget _buildPhoneField() {
+    final hasErr = _phoneError != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -346,8 +407,8 @@ class _BuyerOnboardingStep1ScreenState
         const SizedBox(height: 6.0),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: _borderSubtle),
+            color: hasErr ? const Color(0xFFFFF5F5) : Colors.white,
+            border: Border.all(color: hasErr ? const Color(0xFFC62828) : _borderSubtle, width: hasErr ? 1.5 : 1.0),
             borderRadius: BorderRadius.circular(12.0),
           ),
           child: Row(
@@ -380,6 +441,12 @@ class _BuyerOnboardingStep1ScreenState
                   child: TextField(
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
+                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d\s\-]'))],
+                    onChanged: (val) {
+                      if (_phoneError != null) {
+                        setState(() => _phoneError = InputValidators.validatePhone(val));
+                      }
+                    },
                     style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _textDark),
                     decoration: const InputDecoration(
                       border: InputBorder.none,
@@ -395,6 +462,13 @@ class _BuyerOnboardingStep1ScreenState
             ],
           ),
         ),
+        if (hasErr) ...[
+          const SizedBox(height: 4.0),
+          Text(
+            _phoneError!,
+            style: const TextStyle(fontSize: 11.5, color: Color(0xFFC62828), fontWeight: FontWeight.w600),
+          ),
+        ],
         const SizedBox(height: 8.0),
         InkWell(
           onTap: () => setState(() => _useWhatsApp = !_useWhatsApp),
@@ -435,6 +509,7 @@ class _BuyerOnboardingStep1ScreenState
   }
 
   Widget _buildEmailField() {
+    final hasErr = _emailError != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -442,19 +517,24 @@ class _BuyerOnboardingStep1ScreenState
         const SizedBox(height: 6.0),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: _borderSubtle),
+            color: hasErr ? const Color(0xFFFFF5F5) : Colors.white,
+            border: Border.all(color: hasErr ? const Color(0xFFC62828) : _borderSubtle, width: hasErr ? 1.5 : 1.0),
             borderRadius: BorderRadius.circular(12.0),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: Row(
             children: [
-              const Icon(Icons.mail_outline, color: Color(0xFF8D6E63), size: 18),
+              Icon(Icons.mail_outline, color: hasErr ? const Color(0xFFC62828) : const Color(0xFF8D6E63), size: 18),
               const SizedBox(width: 8.0),
               Expanded(
                 child: TextField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
+                  onChanged: (val) {
+                    if (_emailError != null) {
+                      setState(() => _emailError = InputValidators.validateEmail(val, required: true));
+                    }
+                  },
                   style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _textDark),
                   decoration: const InputDecoration(
                     border: InputBorder.none,
@@ -466,15 +546,23 @@ class _BuyerOnboardingStep1ScreenState
             ],
           ),
         ),
-        const SizedBox(height: 4.0),
-        const Text(
-          '✉️ A verification link will be sent to this email address to verify your organization.',
-          style: TextStyle(
-            fontSize: 11,
-            color: Color(0xFF9C3C18),
-            fontWeight: FontWeight.w500,
+        if (hasErr) ...[
+          const SizedBox(height: 4.0),
+          Text(
+            _emailError!,
+            style: const TextStyle(fontSize: 11.5, color: Color(0xFFC62828), fontWeight: FontWeight.w600),
           ),
-        ),
+        ] else ...[
+          const SizedBox(height: 4.0),
+          const Text(
+            '✉️ A verification link will be sent to this email address to verify your organization.',
+            style: TextStyle(
+              fontSize: 11,
+              color: Color(0xFF9C3C18),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ],
     );
   }
