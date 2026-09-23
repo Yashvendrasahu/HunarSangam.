@@ -21,6 +21,8 @@ class SupabaseService {
   SupabaseClient? _client;
   bool _isLive = false;
   bool get isLive => _isLive;
+  String? _lastError;
+  String? get lastError => _lastError;
 
   SupabaseClient? get client {
     if (_client == null) {
@@ -33,24 +35,64 @@ class SupabaseService {
     return _client;
   }
 
-  Future<void> init() async {
+  Future<bool> init() async {
     try {
+      await SupabaseConfig.loadPersistedConfig();
       final url = SupabaseConfig.url;
       final key = SupabaseConfig.anonKey;
 
-      if (url.isNotEmpty && !url.contains('demo-placeholder') && key.isNotEmpty && !key.contains('placeholder')) {
-        await Supabase.initialize(
-          url: url,
-          anonKey: key,
-        );
-        _client = Supabase.instance.client;
-        _isLive = true;
-        debugPrint('✅ Supabase connected successfully to $url');
+      if (SupabaseConfig.isSupabaseConfigured()) {
+        try {
+          await Supabase.initialize(
+            url: url,
+            anonKey: key,
+          );
+          _client = Supabase.instance.client;
+          _isLive = true;
+          _lastError = null;
+          debugPrint('✅ Supabase connected successfully to $url');
+          return true;
+        } catch (e) {
+          _lastError = e.toString();
+          debugPrint('⚠️ Supabase initialize error: $e');
+          // If already initialized, fetch instance
+          try {
+            _client = Supabase.instance.client;
+            _isLive = true;
+            return true;
+          } catch (_) {}
+        }
       } else {
-        debugPrint('ℹ️ Supabase initialized in resilient local/demo mode (credentials placeholder)');
+        _isLive = false;
+        debugPrint('ℹ️ Supabase running in local/demo mode (API credentials not configured)');
       }
     } catch (e) {
+      _lastError = e.toString();
       debugPrint('⚠️ Supabase init note: $e');
+    }
+    return false;
+  }
+
+  /// Test Supabase connection
+  Future<Map<String, dynamic>> testConnection() async {
+    if (!SupabaseConfig.isSupabaseConfigured()) {
+      return {
+        'success': false,
+        'message': 'Supabase URL or Anon Key is missing. Please configure them in Settings.',
+      };
+    }
+    try {
+      final res = await client?.from('profiles').select('count').limit(1);
+      return {
+        'success': true,
+        'message': 'Successfully connected to Supabase database!',
+        'data': res,
+      };
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Supabase connection error: $e',
+      };
     }
   }
 
@@ -269,7 +311,7 @@ class SupabaseService {
     }
   }
 
-  /// Upload bytes or binary payload to Supabase storage bucket (e.g. product-images, artisan-profiles)
+  /// Upload bytes or binary payload to Supabase storage bucket
   Future<String?> uploadStorageBytes({
     required Uint8List bytes,
     required String bucketName,

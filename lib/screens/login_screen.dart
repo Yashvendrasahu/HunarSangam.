@@ -5,6 +5,7 @@ import '../models/onboarding_state.dart';
 import '../models/buyer_onboarding_model.dart';
 import '../services/auth_service.dart';
 import '../widgets/brand_logo_card.dart';
+import '../widgets/api_config_dialog.dart';
 import 'artisan_home_screen.dart';
 
 /// Dynamic Login Screen supporting Artisan & Bulk Buyer Login,
@@ -642,24 +643,33 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
 
-          // Quick language selector
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF3E7DF),
-              borderRadius: BorderRadius.circular(14.0),
-              border: Border.all(color: const Color(0xFFE5D5CB)),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.language_rounded, size: 14.0, color: Color(0xFF8C3A16)),
-                const SizedBox(width: 4.0),
-                Text(
-                  _selectedLanguage == 'English' ? 'EN' : 'हिन्दी',
-                  style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800, color: Color(0xFF8C3A16)),
+          // Quick language selector & Cloud Setup
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.tune_rounded, size: 20, color: Color(0xFF8C3A16)),
+                tooltip: 'Cloud & AI Setup',
+                onPressed: () => ApiConfigDialog.show(context),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3E7DF),
+                  borderRadius: BorderRadius.circular(14.0),
+                  border: Border.all(color: const Color(0xFFE5D5CB)),
                 ),
-              ],
-            ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.language_rounded, size: 14.0, color: Color(0xFF8C3A16)),
+                    const SizedBox(width: 4.0),
+                    Text(
+                      _selectedLanguage == 'English' ? 'EN' : 'हिन्दी',
+                      style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800, color: Color(0xFF8C3A16)),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),

@@ -11,12 +11,63 @@ class GeminiService {
   GeminiService._internal();
 
   static const List<String> _models = [
-    'gemini-2.5-flash',
-    'gemini-2.0-flash',
     'gemini-1.5-flash',
+    'gemini-2.0-flash',
+    'gemini-1.5-pro',
   ];
 
   String get _apiKey => SupabaseConfig.geminiApiKey;
+  bool get isConfigured => SupabaseConfig.isGeminiConfigured();
+
+  /// Test Gemini API Key connectivity
+  Future<Map<String, dynamic>> testConnection() async {
+    final key = _apiKey;
+    if (key.isEmpty) {
+      return {
+        'success': false,
+        'message': 'Gemini API key is empty. Please enter your Gemini API key in Settings.',
+      };
+    }
+
+    try {
+      final prompt = 'Respond with exact word OK if you can read this.';
+      final url = Uri.parse(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$key',
+      );
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'aistudio-build',
+        },
+        body: jsonEncode({
+          'contents': [
+            {
+              'parts': [{'text': prompt}]
+            }
+          ]
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return {
+          'success': true,
+          'message': 'Gemini AI is active and connected successfully!',
+        };
+      } else {
+        return {
+          'success': false,
+          'message': 'Gemini API Error (HTTP ${response.statusCode}): ${response.body}',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Network/connection error testing Gemini: $e',
+      };
+    }
+  }
 
   /// Translates text or translates vernacular craft language to English / Hindi
   Future<String> translateText({
@@ -277,7 +328,7 @@ Return ONLY valid JSON matching:
     return defaultDesc;
   }
 
-  /// AI craft assistant for conversational queries (replacing FastAPI /api/ai/assistant)
+  /// AI craft assistant for conversational queries
   Future<Map<String, dynamic>> chatWithCraftAssistant({
     required String query,
     String language = 'English',
@@ -319,7 +370,7 @@ Return ONLY valid JSON:
     return defaultResponse;
   }
 
-  /// Core Gemini generateContent HTTP caller
+  /// Core Gemini generateContent HTTP caller with multi-model fallback
   Future<String> generateText({
     required String prompt,
     String? systemInstruction,

@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../widgets/top_header_bar.dart';
 import '../widgets/brand_logo_card.dart';
+import '../widgets/api_config_dialog.dart';
 
 /// Primary Splash & Entry Point Screen for HunarSangam.
 /// Features a warm artisanal Indian background, subtle mandala watermark,
@@ -196,18 +197,31 @@ class _SplashWelcomeScreenState extends State<SplashWelcomeScreen> {
                         ),
                       ),
 
-                      // AI Helped craft badge
+                      // AI Helped craft badge & Cloud status
                       Row(
                         mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Icon(Icons.palette_outlined, size: 14.5, color: Color(0xFF6B584E)),
-                          SizedBox(width: 4.0),
-                          Text(
+                        children: [
+                          const Icon(Icons.palette_outlined, size: 14.5, color: Color(0xFF6B584E)),
+                          const SizedBox(width: 4.0),
+                          const Text(
                             'AI Helped craft',
                             style: TextStyle(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF6B584E),
+                            ),
+                          ),
+                          const SizedBox(width: 8.0),
+                          InkWell(
+                            onTap: () => ApiConfigDialog.show(context),
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF3E7DF),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(Icons.tune_rounded, size: 16, color: Color(0xFF5A483E)),
                             ),
                           ),
                         ],

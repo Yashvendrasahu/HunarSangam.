@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import '../models/buyer_onboarding_model.dart';
 import '../widgets/buyer_bottom_nav_bar.dart';
+import '../widgets/api_config_dialog.dart';
+import '../services/supabase_config.dart';
 
 /// Screen: Bulk Buyer Home Dashboard
 /// Exactly reproduces 'home - bulk buyer.png'
@@ -734,6 +736,32 @@ class BuyerHomeScreen extends StatelessWidget {
         ),
         Row(
           children: [
+            IconButton(
+              icon: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  const Icon(Icons.tune_rounded, size: 20, color: Color(0xFF5D4037)),
+                  Positioned(
+                    right: -2,
+                    top: -2,
+                    child: Container(
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: (SupabaseConfig.isSupabaseConfigured() && SupabaseConfig.isGeminiConfigured())
+                            ? const Color(0xFF2E7D32)
+                            : const Color(0xFFE65100),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              onPressed: () => ApiConfigDialog.show(context),
+              constraints: const BoxConstraints(),
+              padding: const EdgeInsets.all(6.0),
+              tooltip: 'Cloud & AI Setup',
+            ),
             IconButton(
               icon: const Icon(Icons.translate, size: 20, color: Color(0xFF5D4037)),
               onPressed: () {},

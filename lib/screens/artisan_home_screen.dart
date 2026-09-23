@@ -23,6 +23,8 @@ import 'artisan_buyer_chat_screen.dart';
 import 'artisan_chat_screen.dart';
 import 'conversations_list_screen.dart';
 import '../services/chat_service.dart';
+import '../services/supabase_config.dart';
+import '../widgets/api_config_dialog.dart';
 
 /// Primary Artisan Home Dashboard matching 'Artisan Home section.png'
 /// Provides real-time order tracking, AI voice assistant, product management,
@@ -611,9 +613,48 @@ class _ArtisanHomeScreenState extends State<ArtisanHomeScreen> {
             showText: true,
           ),
 
-          // Right Icons: Language, Notification Bell, Avatar
+          // Right Icons: Cloud Setup, Language, Notification Bell, Avatar
           Row(
             children: [
+              // Cloud & AI Settings
+              InkWell(
+                onTap: () => ApiConfigDialog.show(context),
+                borderRadius: BorderRadius.circular(20.0),
+                child: Container(
+                  padding: const EdgeInsets.all(7.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFAF2EC),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFFE5D5CB)),
+                  ),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      const Icon(
+                        Icons.tune_rounded,
+                        size: 18.0,
+                        color: Color(0xFF4A372D),
+                      ),
+                      Positioned(
+                        right: -3,
+                        top: -3,
+                        child: Container(
+                          width: 7,
+                          height: 7,
+                          decoration: BoxDecoration(
+                            color: (SupabaseConfig.isSupabaseConfigured() && SupabaseConfig.isGeminiConfigured())
+                                ? const Color(0xFF2E7D32)
+                                : const Color(0xFFE65100),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8.0),
+
               // Quick-Switch Language Toggle (EN | हिं)
               Container(
                 padding: const EdgeInsets.all(2.5),

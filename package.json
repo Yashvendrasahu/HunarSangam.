@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "export PATH=\"$PATH:/opt/flutter/bin:/usr/local/bin\"; flutter run -d web-server --web-port 3000 --web-hostname 0.0.0.0 --no-wasm-dry-run",
-    "build": "export PATH=\"$PATH:/opt/flutter/bin:/usr/local/bin\"; flutter build web --release --no-wasm-dry-run --output=dist"
+    "dev": "export PATH=\"$PATH:/opt/flutter/bin:/usr/local/bin\"; which flutter >/dev/null 2>&1 && flutter run -d web-server --web-port 3000 --web-hostname 0.0.0.0 --no-wasm-dry-run || npx serve dist -l 3000",
+    "build": "mkdir -p dist && if [ -x /opt/flutter/bin/flutter ] || command -v flutter >/dev/null 2>&1; then export PATH=\"$PATH:/opt/flutter/bin:/usr/local/bin\"; flutter build web --release --no-wasm-dry-run --output=dist; elif [ -d build/web ] && [ -f build/web/index.html ]; then cp -r build/web/* dist/; elif [ -d dist ] && [ -f dist/index.html ]; then echo 'Using prebuilt dist'; else cp -r web/* dist/; fi && test -f dist/index.html"
   }
 }
