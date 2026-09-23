@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../models/product_draft.dart';
 import '../widgets/artisan_bottom_navigation.dart';
+import '../../widgets/craft_image.dart';
 
 /// Screen matching 'p4— photo and dimension review.png'
 /// Step 2 of 2 • Dimension Tool • ₹10 Coin Size Detector
@@ -24,6 +25,8 @@ class DimensionReviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final craftCategory = draft.category.isNotEmpty ? draft.category : draft.title;
+
     return Scaffold(
       backgroundColor: const Color(0xFFFDFBF9),
       body: SafeArea(
@@ -106,15 +109,16 @@ class DimensionReviewScreen extends StatelessWidget {
                             height: 175,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(14.0),
-                              image: const DecorationImage(
-                                image: NetworkImage(
-                                  'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600&auto=format&fit=crop&q=80',
-                                ),
-                                fit: BoxFit.cover,
-                              ),
                             ),
+                            clipBehavior: Clip.antiAlias,
                             child: Stack(
+                              fit: StackFit.expand,
                               children: [
+                                CraftImage(
+                                  imageSource: draft.photoUrl,
+                                  craftCategoryOrTitle: craftCategory,
+                                  fit: BoxFit.cover,
+                                ),
                                 // Corner Guides on coin detection photo
                                 Positioned(
                                   top: 10,
@@ -168,12 +172,12 @@ class DimensionReviewScreen extends StatelessWidget {
                             height: 175,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(14.0),
-                              image: const DecorationImage(
-                                image: NetworkImage(
-                                  'https://images.unsplash.com/photo-1590736969955-71cc94801759?auto=format&fit=crop&w=600&q=80',
-                                ),
-                                fit: BoxFit.cover,
-                              ),
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            child: CraftImage(
+                              imageSource: draft.secondaryPhotoUrl.isNotEmpty ? draft.secondaryPhotoUrl : draft.photoUrl,
+                              craftCategoryOrTitle: craftCategory,
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
@@ -356,17 +360,17 @@ class DimensionReviewScreen extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 4.0),
                                       RichText(
-                                        text: const TextSpan(
-                                          text: '12.4 ',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF221C19)),
-                                          children: [
+                                        text: TextSpan(
+                                          text: '${draft.diameterIn.toStringAsFixed(1)} ',
+                                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF221C19)),
+                                          children: const [
                                             TextSpan(text: 'in', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
                                           ],
                                         ),
                                       ),
-                                      const Text(
-                                        '31.5 cm',
-                                        style: TextStyle(fontSize: 10.0, color: Color(0xFF8B776E)),
+                                      Text(
+                                        '${(draft.diameterIn * 2.54).toStringAsFixed(1)} cm',
+                                        style: const TextStyle(fontSize: 10.0, color: Color(0xFF8B776E)),
                                       ),
                                     ],
                                   ),
@@ -392,17 +396,17 @@ class DimensionReviewScreen extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 4.0),
                                       RichText(
-                                        text: const TextSpan(
-                                          text: '6.2 ',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF221C19)),
-                                          children: [
+                                        text: TextSpan(
+                                          text: '${draft.heightIn.toStringAsFixed(1)} ',
+                                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF221C19)),
+                                          children: const [
                                             TextSpan(text: 'in', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
                                           ],
                                         ),
                                       ),
-                                      const Text(
-                                        '15.7 cm',
-                                        style: TextStyle(fontSize: 10.0, color: Color(0xFF8B776E)),
+                                      Text(
+                                        '${(draft.heightIn * 2.54).toStringAsFixed(1)} cm',
+                                        style: const TextStyle(fontSize: 10.0, color: Color(0xFF8B776E)),
                                       ),
                                     ],
                                   ),
@@ -428,10 +432,10 @@ class DimensionReviewScreen extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 4.0),
                                       RichText(
-                                        text: const TextSpan(
-                                          text: '~420 ',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF221C19)),
-                                          children: [
+                                        text: TextSpan(
+                                          text: '~${draft.estWeightGrams.toInt()} ',
+                                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF221C19)),
+                                          children: const [
                                             TextSpan(text: 'g', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
                                           ],
                                         ),

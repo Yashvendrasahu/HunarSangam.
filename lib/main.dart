@@ -89,6 +89,42 @@ class _OnboardingFlowCoordinatorState extends State<OnboardingFlowCoordinator> {
   bool _isLoggedIn = false;
   bool _showingLoginScreen = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _checkExistingSession();
+  }
+
+  Future<void> _checkExistingSession() async {
+    final user = await AuthService().restoreSession();
+    if (user != null && mounted) {
+      if (user.role == 'buyer') {
+        setState(() {
+          _buyerModel = AuthService().currentBuyer ??
+              BuyerOnboardingModel(
+                yourName: user.name,
+                businessName: 'FabCraft Living',
+                workEmail: user.email,
+                phoneNumber: user.phone,
+              );
+          _buyerStep = 5;
+        });
+      } else {
+        final artisan = AuthService().currentArtisan;
+        setState(() {
+          _state = _state.copyWith(
+            artisanName: user.name,
+            email: user.email,
+            phoneNumber: user.phone,
+            selectedRole: UserRole.artisan,
+            artisanLocation: artisan?.location ?? 'Barabanki, Uttar Pradesh',
+          );
+          _isLoggedIn = true;
+        });
+      }
+    }
+  }
+
   void _updateState(OnboardingState newState) {
     setState(() {
       _state = newState;

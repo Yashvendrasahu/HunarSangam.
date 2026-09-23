@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/artisan_model.dart';
 import '../models/buyer_onboarding_model.dart';
 import '../models/onboarding_state.dart';
@@ -49,6 +50,7 @@ class AuthService {
   factory AuthService() => _instance;
   AuthService._internal() {
     _initRegisteredUsers();
+    _listenToSupabaseAuth();
   }
 
   AuthUser? _currentUser;
@@ -58,7 +60,7 @@ class AuthService {
   String? _lastGeneratedOtp;
   String? _pendingPhone;
 
-  // In-memory registered user database
+  // In-memory registered user database for seamless demo fallback
   final Map<String, Map<String, dynamic>> _userStore = {};
 
   AuthUser? get currentUser => _currentUser;
@@ -98,10 +100,110 @@ class AuthService {
     };
   }
 
+  void _listenToSupabaseAuth() {
+    try {
+      SupabaseService().authStateChanges?.listen((data) {
+        final session = data.session;
+        if (session != null) {
+          final user = session.user;
+          final meta = user.userMetadata ?? {};
+          final role = meta['role']?.toString() ?? 'artisan';
+          final name = meta['name']?.toString() ?? user.email?.split('@').first ?? 'User';
+          final phone = meta['phone']?.toString() ?? '';
+
+          _currentUser = AuthUser(
+            id: user.id,
+            email: user.email ?? '',
+            phone: phone,
+            name: name,
+            role: role,
+            lastSignInAt: DateTime.now(),
+          );
+          _sessionToken = session.accessToken;
+          _authStreamController.add(_currentUser);
+        } else if (data.event == AuthChangeEvent.signedOut) {
+          _currentUser = null;
+          _currentArtisan = null;
+          _currentBuyer = null;
+          _sessionToken = null;
+          _authStreamController.add(null);
+        }
+      });
+    } catch (e) {
+      debugPrint('[AuthService] Supabase authStateChanges listener note: $e');
+    }
+  }
+
+  /// Check and restore existing Supabase session on app launch
+  Future<AuthUser?> restoreSession() async {
+    try {
+      final session = SupabaseService().currentSession;
+      final user = SupabaseService().currentAuthUser;
+      if (session != null && user != null) {
+        final meta = user.userMetadata ?? {};
+        final role = meta['role']?.toString() ?? 'artisan';
+        final name = meta['name']?.toString() ?? user.email?.split('@').first ?? 'User';
+        final phone = meta['phone']?.toString() ?? '';
+
+        final authUser = AuthUser(
+          id: user.id,
+          email: user.email ?? '',
+          phone: phone,
+          name: name,
+          role: role,
+          lastSignInAt: DateTime.now(),
+        );
+
+        _currentUser = authUser;
+        _sessionToken = session.accessToken;
+
+        if (role == 'buyer') {
+          _currentBuyer = BuyerOnboardingModel(
+            yourName: name,
+            businessName: meta['business_name']?.toString() ?? 'FabCraft Living',
+            workEmail: user.email ?? '',
+            phoneNumber: phone,
+          );
+        } else {
+          _currentArtisan = ArtisanProfileModel(
+            id: user.id,
+            userId: user.id,
+            name: name,
+            phone: phone,
+            email: user.email ?? '',
+            craftType: meta['craft_type']?.toString() ?? 'Bamboo & Cane Weaving',
+            location: meta['location']?.toString() ?? 'Barabanki, Uttar Pradesh',
+            bio: 'Verified Master Craft Artisan',
+            verificationStatus: 'verified',
+            experienceYears: '10+ Years',
+            giCluster: 'Assam Cane & Bamboo Crafts',
+            giRegistrationNumber: 'GI Reg #431',
+            reliabilityScore: 98,
+            monthlyCapacity: 500,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          );
+        }
+
+        _authStreamController.add(_currentUser);
+        return _currentUser;
+      }
+    } catch (e) {
+      debugPrint('[AuthService] restoreSession note: $e');
+    }
+    return null;
+  }
+
   /// Request OTP for phone number authentication
   Future<String> sendOtp({required String phone}) async {
     _pendingPhone = phone.trim();
-    // Generate a real 6-digit OTP
+
+    // Attempt Supabase Auth OTP first
+    try {
+      await SupabaseService().sendOtpWithSupabaseAuth(phone: _pendingPhone!);
+    } catch (_) {}
+
+    // Generate local 6-digit OTP for testing & fallback
     final random = Random();
     final otp = (100000 + random.nextInt(900000)).toString();
     _lastGeneratedOtp = otp;
@@ -110,7 +212,7 @@ class AuthService {
       print('[AuthService] Generated OTP $otp for phone $phone');
     }
     
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 250));
     return otp;
   }
 
@@ -200,16 +302,82 @@ class AuthService {
     return user;
   }
 
-  /// Password login for registered artisan or buyer & syncs with Supabase
+  /// Supabase Password Login with comprehensive fallback for email / phone
   Future<AuthUser> loginWithEmailOrPhone({
     required String contact,
     required String password,
     String? preferredRole,
   }) async {
     final trimmedContact = contact.trim().toLowerCase();
-    Map<String, dynamic>? match;
+    final isEmail = contact.contains('@');
 
-    // Look for exact email or phone match
+    // 1. Try real Supabase Auth signIn if email is provided and Supabase is configured
+    if (isEmail && SupabaseService().isLive) {
+      try {
+        final supaRes = await SupabaseService().signInWithSupabaseAuth(
+          email: trimmedContact,
+          password: password,
+        );
+
+        if (supaRes['success'] == true) {
+          final role = supaRes['role']?.toString() ?? preferredRole ?? 'artisan';
+          final name = supaRes['name']?.toString() ?? trimmedContact.split('@').first;
+          final phone = supaRes['phone']?.toString() ?? '+91 98765 43210';
+          final userId = supaRes['user_id']?.toString() ?? UuidUtil.generateV4();
+
+          final user = AuthUser(
+            id: userId,
+            email: trimmedContact,
+            phone: phone,
+            name: name,
+            role: role,
+            lastSignInAt: DateTime.now(),
+          );
+
+          _currentUser = user;
+          _sessionToken = (supaRes['session'] as Session?)?.accessToken ?? 'hs_jwt_${DateTime.now().millisecondsSinceEpoch}';
+
+          if (role == 'buyer') {
+            _currentBuyer = BuyerOnboardingModel(
+              yourName: name,
+              businessName: 'FabCraft Living',
+              workEmail: trimmedContact,
+              phoneNumber: phone,
+            );
+          } else {
+            _currentArtisan = ArtisanProfileModel(
+              id: userId,
+              userId: userId,
+              name: name,
+              phone: phone,
+              email: trimmedContact,
+              craftType: 'Bamboo & Cane Weaving',
+              location: 'Barabanki, Uttar Pradesh',
+              bio: 'Verified Master Craft Artisan',
+              verificationStatus: 'verified',
+              experienceYears: '10+ Years',
+              giCluster: 'Assam Cane & Bamboo Crafts',
+              giRegistrationNumber: 'GI Reg #431',
+              reliabilityScore: 98,
+              monthlyCapacity: 500,
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
+            );
+          }
+
+          _authStreamController.add(_currentUser);
+          return user;
+        } else if (supaRes['isAuthException'] == true) {
+          // If Supabase gave an explicit auth error (e.g. invalid password), throw or fallback
+          debugPrint('[AuthService] Supabase Auth sign-in failed: ${supaRes['error']}');
+        }
+      } catch (e) {
+        debugPrint('[AuthService] Supabase Auth sign-in exception: $e');
+      }
+    }
+
+    // 2. In-memory / Registered User matching & Fallback
+    Map<String, dynamic>? match;
     for (final entry in _userStore.values) {
       if (entry['email']?.toString().toLowerCase() == trimmedContact ||
           entry['phone']?.toString().replaceAll(' ', '') == trimmedContact.replaceAll(' ', '')) {
@@ -218,7 +386,6 @@ class AuthService {
       }
     }
 
-    final isEmail = contact.contains('@');
     final role = match?['role'] ?? preferredRole ?? (isEmail && trimmedContact.contains('buyer') ? 'buyer' : 'artisan');
     final name = match?['name'] ?? (isEmail ? contact.split('@').first.replaceAll('.', ' ').toUpperCase() : 'Artisan User');
     final email = match?['email'] ?? (isEmail ? contact : '$contact@hunarsangam.in');
@@ -294,7 +461,7 @@ class AuthService {
     return user;
   }
 
-  /// Register new artisan account & persist directly in Supabase
+  /// Register new maker / artisan account via Supabase Auth
   Future<AuthUser> registerArtisan({
     required String name,
     required String phone,
@@ -309,38 +476,67 @@ class AuthService {
     int monthlyCapacity = 500,
     String? profileImage,
   }) async {
+    final cleanEmail = email.trim().isNotEmpty ? email.trim() : '${phone.replaceAll(RegExp(r'\D'), '')}@hunarsangam.in';
+    final cleanPassword = password.trim().isNotEmpty ? password.trim() : 'ArtisanPass@123';
     String userId = UuidUtil.generateV4();
-    try {
-      final syncRes = await SupabaseService().syncUserAccount(
-        name: name,
-        phone: phone,
-        email: email,
-        password: password,
-        role: 'artisan',
-        profileImage: profileImage,
-        artisanDetails: {
-          'craft_type': craftType,
-          'location': location,
-          'bio': bio,
-          'verification_status': 'verified',
-          'experience_years': experienceYears,
-          'gi_cluster': giCluster,
-          'gi_registration_number': giRegistrationNumber,
-          'monthly_capacity': monthlyCapacity,
-        },
-      );
-      if (syncRes['user_id'] != null && syncRes['user_id'].toString().isNotEmpty) {
-        userId = syncRes['user_id'].toString();
+
+    // 1. Supabase Auth registration
+    if (SupabaseService().isLive) {
+      try {
+        final supaRes = await SupabaseService().signUpWithSupabaseAuth(
+          email: cleanEmail,
+          password: cleanPassword,
+          name: name,
+          phone: phone,
+          role: 'artisan',
+          profileImage: profileImage,
+          artisanDetails: {
+            'craft_type': craftType,
+            'location': location,
+            'bio': bio,
+            'experience_years': experienceYears,
+            'gi_cluster': giCluster,
+            'gi_registration_number': giRegistrationNumber,
+            'monthly_capacity': monthlyCapacity,
+          },
+        );
+
+        if (supaRes['user_id'] != null) {
+          userId = supaRes['user_id'].toString();
+        }
+      } catch (e) {
+        debugPrint('[AuthService] Supabase registerArtisan notice: $e');
       }
-    } catch (e) {
-      if (kDebugMode) {
-        print('[AuthService] Supabase registration notice: $e');
-      }
+    } else {
+      // Local sync fallback
+      try {
+        final syncRes = await SupabaseService().syncUserAccount(
+          name: name,
+          phone: phone,
+          email: cleanEmail,
+          password: cleanPassword,
+          role: 'artisan',
+          profileImage: profileImage,
+          artisanDetails: {
+            'craft_type': craftType,
+            'location': location,
+            'bio': bio,
+            'verification_status': 'verified',
+            'experience_years': experienceYears,
+            'gi_cluster': giCluster,
+            'gi_registration_number': giRegistrationNumber,
+            'monthly_capacity': monthlyCapacity,
+          },
+        );
+        if (syncRes['user_id'] != null && syncRes['user_id'].toString().isNotEmpty) {
+          userId = syncRes['user_id'].toString();
+        }
+      } catch (_) {}
     }
 
     final user = AuthUser(
       id: userId,
-      email: email.trim(),
+      email: cleanEmail,
       phone: phone.trim(),
       name: name.trim().isNotEmpty ? name.trim() : 'Artisan',
       role: 'artisan',
@@ -348,12 +544,12 @@ class AuthService {
     );
 
     // Save in user store
-    _userStore[email.trim().isNotEmpty ? email.trim().toLowerCase() : phone.trim()] = {
+    _userStore[cleanEmail.toLowerCase()] = {
       'id': userId,
       'name': user.name,
       'phone': user.phone,
       'email': user.email,
-      'password': password,
+      'password': cleanPassword,
       'role': 'artisan',
       'craftType': craftType,
       'location': location,
@@ -386,7 +582,7 @@ class AuthService {
     return user;
   }
 
-  /// Register new bulk buyer account & persist in Supabase
+  /// Register new bulk buyer account via Supabase Auth
   Future<AuthUser> registerBuyer({
     required String yourName,
     required String businessName,
@@ -397,42 +593,66 @@ class AuthService {
     String cityLocation = 'New Delhi',
     String? profileImage,
   }) async {
+    final cleanEmail = email.trim().isNotEmpty ? email.trim() : '${phone.replaceAll(RegExp(r'\D'), '')}@buyer.hunarsangam.in';
+    final cleanPassword = password.trim().isNotEmpty ? password.trim() : 'BuyerPass@123';
     String userId = UuidUtil.generateV4();
-    try {
-      final syncRes = await SupabaseService().syncUserAccount(
-        name: yourName,
-        phone: phone,
-        email: email,
-        password: password,
-        role: 'buyer',
-        profileImage: profileImage,
-      );
-      if (syncRes['user_id'] != null && syncRes['user_id'].toString().isNotEmpty) {
-        userId = syncRes['user_id'].toString();
+
+    // 1. Supabase Auth registration
+    if (SupabaseService().isLive) {
+      try {
+        final supaRes = await SupabaseService().signUpWithSupabaseAuth(
+          email: cleanEmail,
+          password: cleanPassword,
+          name: yourName,
+          phone: phone,
+          role: 'buyer',
+          profileImage: profileImage,
+          extraMetadata: {
+            'business_name': businessName,
+            'business_type': businessType,
+            'location': cityLocation,
+          },
+        );
+
+        if (supaRes['user_id'] != null) {
+          userId = supaRes['user_id'].toString();
+        }
+      } catch (e) {
+        debugPrint('[AuthService] Supabase registerBuyer notice: $e');
       }
-    } catch (e) {
-      if (kDebugMode) {
-        print('[AuthService] Supabase buyer registration notice: $e');
-      }
+    } else {
+      try {
+        final syncRes = await SupabaseService().syncUserAccount(
+          name: yourName,
+          phone: phone,
+          email: cleanEmail,
+          password: cleanPassword,
+          role: 'buyer',
+          profileImage: profileImage,
+        );
+        if (syncRes['user_id'] != null && syncRes['user_id'].toString().isNotEmpty) {
+          userId = syncRes['user_id'].toString();
+        }
+      } catch (_) {}
     }
 
     final user = AuthUser(
       id: userId,
-      email: email.trim(),
+      email: cleanEmail,
       phone: phone.trim(),
       name: yourName.trim().isNotEmpty ? yourName.trim() : 'Bulk Buyer',
       role: 'buyer',
       lastSignInAt: DateTime.now(),
     );
 
-    _userStore[email.trim().isNotEmpty ? email.trim().toLowerCase() : phone.trim()] = {
+    _userStore[cleanEmail.toLowerCase()] = {
       'id': userId,
       'name': user.name,
       'businessName': businessName,
       'businessType': businessType,
       'phone': user.phone,
       'email': user.email,
-      'password': password,
+      'password': cleanPassword,
       'role': 'buyer',
       'location': cityLocation,
     };
@@ -466,9 +686,7 @@ class AuthService {
     final bio = state.voiceTranscript.isNotEmpty
         ? state.voiceTranscript
         : 'Master artisan specializing in GI-certified handmade heritage craft.';
-    final photo = state.hasProfilePhoto
-        ? 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80'
-        : '';
+    final photo = state.profilePhotoUrl.isNotEmpty ? state.profilePhotoUrl : '';
 
     try {
       final syncRes = await SupabaseService().syncUserAccount(
@@ -538,10 +756,10 @@ class AuthService {
     }
   }
 
-  /// Sign out current session
+  /// Sign out current session & Supabase Auth
   Future<void> signOut() async {
     try {
-      await SupabaseService().client?.auth.signOut();
+      await SupabaseService().signOutSupabaseAuth();
     } catch (_) {}
     _currentUser = null;
     _currentArtisan = null;
@@ -551,4 +769,3 @@ class AuthService {
     _authStreamController.add(null);
   }
 }
-

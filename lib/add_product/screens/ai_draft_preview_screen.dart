@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../models/product_draft.dart';
 import '../widgets/artisan_bottom_navigation.dart';
+import '../../widgets/craft_image.dart';
 
 /// Screen 6: Matches 'p6-decsiption review.png' 100%
 /// Product Preview - Step 2 of 2 • Review & Confirm
@@ -334,18 +335,12 @@ class AiDraftPreviewScreen extends StatelessWidget {
                     // Product Photo + 3 Badges
                     Stack(
                       children: [
-                        Image.network(
-                          draft.photoUrl,
+                        CraftImage(
+                          imageSource: draft.photoUrl,
+                          craftCategoryOrTitle: draft.category.isNotEmpty ? draft.category : draft.title,
                           height: 180.0,
                           width: double.infinity,
                           fit: BoxFit.cover,
-                          errorBuilder: (ctx, err, stack) => Container(
-                            height: 180.0,
-                            color: const Color(0xFFF3E7DF),
-                            child: const Center(
-                              child: Icon(Icons.palette_outlined, size: 40.0, color: Color(0xFF8C3A16)),
-                            ),
-                          ),
                         ),
                         Positioned(
                           top: 8.0,

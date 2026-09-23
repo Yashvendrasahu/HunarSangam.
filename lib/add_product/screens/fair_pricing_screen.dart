@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/product_draft.dart';
 import '../widgets/artisan_bottom_navigation.dart';
 import '../../services/hardware_service.dart';
+import '../../widgets/craft_image.dart';
 
 /// Screen matching 'p7— Fair Pricing Assistant.png'
 /// Know Your Fair Price • Step 3 of 3 • Price Intelligence
@@ -215,14 +216,13 @@ class _FairPricingScreenState extends State<FairPricingScreen> {
                       ),
                       child: Row(
                         children: [
-                          ClipRRect(
+                          CraftImage(
+                            imageSource: widget.draft.photoUrl,
+                            craftCategoryOrTitle: widget.draft.category.isNotEmpty ? widget.draft.category : widget.draft.title,
+                            width: 60,
+                            height: 44,
                             borderRadius: BorderRadius.circular(8.0),
-                            child: Image.network(
-                              'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=160&auto=format&fit=crop&q=80',
-                              width: 60,
-                              height: 44,
-                              fit: BoxFit.cover,
-                            ),
+                            fit: BoxFit.cover,
                           ),
                           const SizedBox(width: 10.0),
                           Expanded(

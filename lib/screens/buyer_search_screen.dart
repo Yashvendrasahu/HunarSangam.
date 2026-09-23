@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/buyer_bottom_nav_bar.dart';
 import '../services/hardware_service.dart';
+import '../utils/craft_assets.dart';
+import '../widgets/craft_image.dart';
 
 /// Screen d2: Bulk Buyer Search Screen
 /// Matches 'd2 - bulk— Search.png'
@@ -53,19 +55,19 @@ class _BuyerSearchScreenState extends State<BuyerSearchScreen> {
   final List<Map<String, String>> _categories = [
     {
       'title': 'Pottery & Ceramics',
-      'image': 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=400&q=80',
+      'image': CraftAssets.bluePotteryVase,
     },
     {
       'title': 'Handloom & Textiles',
-      'image': 'https://images.unsplash.com/photo-1615865417491-9941019fbc00?auto=format&fit=crop&w=400&q=80',
+      'image': CraftAssets.banarasiSaree,
     },
     {
       'title': 'Cane & Bamboo',
-      'image': 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80',
+      'image': CraftAssets.bambooBasket,
     },
     {
       'title': 'Metal & Brass',
-      'image': 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=400&q=80',
+      'image': CraftAssets.brassVase,
     },
   ];
 
@@ -349,12 +351,10 @@ class _BuyerSearchScreenState extends State<BuyerSearchScreen> {
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          Image.network(
-                            cat['image']!,
+                          CraftImage(
+                            imageSource: cat['image']!,
+                            craftCategoryOrTitle: cat['title']!,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Container(
-                              color: const Color(0xFFFAF0E9),
-                            ),
                           ),
                           Container(
                             color: Colors.black.withOpacity(0.38),

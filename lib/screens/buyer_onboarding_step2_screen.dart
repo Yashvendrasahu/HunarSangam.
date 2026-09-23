@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import '../models/buyer_onboarding_model.dart';
+import '../utils/craft_assets.dart';
+import '../widgets/craft_image.dart';
 
 /// Screen: Bulk Buyer Registration - Step 2 of 3: Sourcing Preferences
 /// Exactly matches 'bulk buyer step 2 register.png'
@@ -36,49 +38,49 @@ class _BuyerOnboardingStep2ScreenState extends State<BuyerOnboardingStep2Screen>
       'title': 'Home Decor',
       'subtitle': '140+ Clusters',
       'icon': Icons.chair_outlined,
-      'image': 'https://images.unsplash.com/photo-1584589167171-541ce45f1eea?auto=format&fit=crop&w=600&q=80',
+      'image': CraftAssets.bluePotteryVase,
     },
     {
       'id': 'bamboo_craft',
       'title': 'Bamboo Craft',
       'subtitle': 'GI Certified',
       'icon': Icons.forest_outlined,
-      'image': 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80',
+      'image': CraftAssets.bambooBasket,
     },
     {
       'id': 'textiles',
       'title': 'Textiles',
       'subtitle': 'Weaves & Prints',
       'icon': Icons.dry_cleaning_outlined,
-      'image': 'https://images.unsplash.com/photo-1615865417491-9941019fbc00?auto=format&fit=crop&w=600&q=80',
+      'image': CraftAssets.banarasiSaree,
     },
     {
       'id': 'pottery',
       'title': 'Pottery',
       'subtitle': 'Studio & Clay',
       'icon': Icons.water_drop_outlined,
-      'image': 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80',
+      'image': CraftAssets.terracottaPot,
     },
     {
       'id': 'wood_craft',
       'title': 'Wood Craft',
       'subtitle': 'Carvings & Toys',
       'icon': Icons.carpenter_outlined,
-      'image': 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&q=80',
+      'image': CraftAssets.woodenToys,
     },
     {
       'id': 'metal_craft',
       'title': 'Metal Craft',
       'subtitle': 'Brass & Dokra',
       'icon': Icons.hardware_outlined,
-      'image': 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=600&q=80',
+      'image': CraftAssets.brassVase,
     },
     {
       'id': 'jewelry',
-      'title': 'Jewelry',
-      'subtitle': 'Silver & Beads',
-      'icon': Icons.diamond_outlined,
-      'image': 'https://images.unsplash.com/photo-1590736969955-71cc94801759?auto=format&fit=crop&w=600&q=80',
+      'title': 'Folk Art',
+      'subtitle': 'Madhubani & Pattachitra',
+      'icon': Icons.palette_outlined,
+      'image': CraftAssets.madhubaniPainting,
     },
     {
       'id': 'other',

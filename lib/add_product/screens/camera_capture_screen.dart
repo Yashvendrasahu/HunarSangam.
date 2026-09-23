@@ -27,12 +27,16 @@ class CameraCaptureScreen extends StatelessWidget {
     final photo = await HardwareService().captureImageFromCamera();
     if (photo != null) {
       onImageCaptured?.call(CapturedImageData(photo.path));
-    } else {
-      onImageCaptured?.call(const CapturedImageData(
-        'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&auto=format&fit=crop&q=80',
-      ));
+      onCapture();
     }
-    onCapture();
+  }
+
+  Future<void> _handleGallery(BuildContext context) async {
+    final photo = await HardwareService().pickImageFromGallery();
+    if (photo != null) {
+      onImageCaptured?.call(CapturedImageData(photo.path));
+      onCapture();
+    }
   }
 
   @override
@@ -91,10 +95,25 @@ class CameraCaptureScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16.0),
                 ),
                 child: Center(
-                  child: Icon(
-                    Icons.camera_alt_outlined,
-                    size: 64,
-                    color: Colors.black.withOpacity(0.15),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.camera_alt_outlined,
+                        size: 64,
+                        color: Colors.black.withOpacity(0.2),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Frame your handcrafted product\nwith natural lighting',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black.withOpacity(0.5),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -106,40 +125,55 @@ class CameraCaptureScreen extends StatelessWidget {
               child: ArtisanStudioTips(),
             ),
 
-            // Shutter Button
+            // Shutter Button & Gallery Option
             Padding(
-              padding: const EdgeInsets.only(top: 10.0, bottom: 24.0),
-              child: GestureDetector(
-                onTap: () => _handleCapture(context),
-                child: Container(
-                  width: 76,
-                  height: 76,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFFF3D5C5),
-                    border: Border.all(color: const Color(0xFFE5BFA8), width: 3),
+              padding: const EdgeInsets.only(top: 8.0, bottom: 20.0, left: 24, right: 24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.photo_library_outlined, size: 28, color: Color(0xFF8C3A16)),
+                    tooltip: 'Choose from Gallery',
+                    onPressed: () => _handleGallery(context),
                   ),
-                  child: Center(
+                  GestureDetector(
+                    onTap: () => _handleCapture(context),
                     child: Container(
-                      width: 58,
-                      height: 58,
-                      decoration: const BoxDecoration(
+                      width: 76,
+                      height: 76,
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Color(0xFF9C3C18),
+                        color: const Color(0xFFF3D5C5),
+                        border: Border.all(color: const Color(0xFFE5BFA8), width: 3),
                       ),
-                      child: const Center(
-                        child: Text(
-                          'Click',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
+                      child: Center(
+                        child: Container(
+                          width: 58,
+                          height: 58,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xFF9C3C18),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'Click',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
+                  IconButton(
+                    icon: const Icon(Icons.flash_auto_outlined, size: 28, color: Color(0xFF8C3A16)),
+                    tooltip: 'Flash',
+                    onPressed: () {},
+                  ),
+                ],
               ),
             ),
           ],

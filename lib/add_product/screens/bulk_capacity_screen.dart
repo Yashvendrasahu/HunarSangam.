@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/product_draft.dart';
 import '../widgets/voice_waveform.dart';
 import '../widgets/artisan_bottom_navigation.dart';
+import '../../widgets/craft_image.dart';
 
 /// Screen 8: Matches 'p8-voice based piese in day asking.png' 100%
 /// Bulk Record - Production capacity asking screen:
@@ -134,17 +135,12 @@ class _BulkCapacityScreenState extends State<BulkCapacityScreen> {
                           borderRadius: BorderRadius.circular(10.0),
                           child: Stack(
                             children: [
-                              Image.network(
-                                'https://images.unsplash.com/photo-1590402494682-cd3fb53b1f70?w=600&auto=format&fit=crop&q=80',
+                              CraftImage(
+                                imageSource: widget.draft.photoUrl,
+                                craftCategoryOrTitle: widget.draft.category.isNotEmpty ? widget.draft.category : widget.draft.title,
                                 width: 64.0,
                                 height: 64.0,
                                 fit: BoxFit.cover,
-                                errorBuilder: (ctx, err, stack) => Container(
-                                  width: 64.0,
-                                  height: 64.0,
-                                  color: const Color(0xFFEADFD6),
-                                  child: const Icon(Icons.shopping_basket_outlined, color: Color(0xFF8C3A16)),
-                                ),
                               ),
                               Positioned(
                                 bottom: 3.0,

@@ -35,6 +35,10 @@ class SupabaseService {
     return _client;
   }
 
+  User? get currentAuthUser => client?.auth.currentUser;
+  Session? get currentSession => client?.auth.currentSession;
+  Stream<AuthState>? get authStateChanges => client?.auth.onAuthStateChange;
+
   Future<bool> init() async {
     try {
       await SupabaseConfig.loadPersistedConfig();
@@ -93,6 +97,291 @@ class SupabaseService {
         'success': false,
         'message': 'Supabase connection error: $e',
       };
+    }
+  }
+
+  // ==========================================
+  // SUPABASE AUTHENTICATION METHODS
+  // ==========================================
+
+  /// Secure Sign Up with Supabase Auth for Makers (Artisans) and Bulk Buyers
+  Future<Map<String, dynamic>> signUpWithSupabaseAuth({
+    required String email,
+    required String password,
+    required String name,
+    required String phone,
+    required String role, // 'artisan' or 'buyer'
+    String? profileImage,
+    Map<String, dynamic>? extraMetadata,
+    Map<String, dynamic>? artisanDetails,
+  }) async {
+    final cleanEmail = email.trim().toLowerCase();
+    final cleanPassword = password.trim();
+
+    if (_isLive && client != null) {
+      try {
+        final authResponse = await client!.auth.signUp(
+          email: cleanEmail,
+          password: cleanPassword,
+          data: {
+            'name': name.trim(),
+            'phone': phone.trim(),
+            'role': role,
+            'profile_image': profileImage,
+            ...?extraMetadata,
+          },
+        );
+
+        final user = authResponse.user;
+        final userId = user?.id ?? UuidUtil.generateV4();
+
+        // Upsert into profiles table
+        try {
+          await client!.from('profiles').upsert({
+            'user_id': userId,
+            'name': name.trim(),
+            'phone': phone.trim(),
+            'email': cleanEmail,
+            'role': role,
+            'profile_image': profileImage,
+            'updated_at': DateTime.now().toIso8601String(),
+          });
+
+          if (role == 'artisan' && artisanDetails != null) {
+            await client!.from('artisans').upsert({
+              'user_id': userId,
+              'craft_type': artisanDetails['craft_type'] ?? 'Handicrafts',
+              'location': artisanDetails['location'] ?? 'India',
+              'bio': artisanDetails['bio'] ?? '',
+              'monthly_capacity': artisanDetails['monthly_capacity'] ?? 500,
+              'verification_status': 'verified',
+              'updated_at': DateTime.now().toIso8601String(),
+            });
+          }
+        } catch (dbErr) {
+          debugPrint('⚠️ Note during profile DB upsert: $dbErr');
+        }
+
+        return {
+          'success': true,
+          'user_id': userId,
+          'email': cleanEmail,
+          'name': name.trim(),
+          'phone': phone.trim(),
+          'role': role,
+          'session': authResponse.session,
+          'is_email_confirmed': user?.emailConfirmedAt != null,
+          'message': authResponse.session != null
+              ? 'Successfully registered and logged in with Supabase!'
+              : 'Account created! Please check your email to confirm registration.',
+        };
+      } on AuthException catch (authErr) {
+        debugPrint('⚠️ Supabase AuthException during sign up: ${authErr.message}');
+        return {
+          'success': false,
+          'error': authErr.message,
+          'isAuthException': true,
+        };
+      } catch (e) {
+        debugPrint('⚠️ General error during Supabase sign up: $e');
+        return {
+          'success': false,
+          'error': e.toString(),
+        };
+      }
+    }
+
+    // Offline / Demo fallback
+    final fallbackId = UuidUtil.generateV4();
+    return {
+      'success': true,
+      'user_id': fallbackId,
+      'email': cleanEmail,
+      'name': name.trim(),
+      'phone': phone.trim(),
+      'role': role,
+      'is_fallback': true,
+      'message': 'Account created in local session.',
+    };
+  }
+
+  /// Secure Sign In with Supabase Auth using Email & Password
+  Future<Map<String, dynamic>> signInWithSupabaseAuth({
+    required String email,
+    required String password,
+  }) async {
+    final cleanEmail = email.trim().toLowerCase();
+    final cleanPassword = password.trim();
+
+    if (_isLive && client != null) {
+      try {
+        final authResponse = await client!.auth.signInWithPassword(
+          email: cleanEmail,
+          password: cleanPassword,
+        );
+
+        final user = authResponse.user;
+        if (user == null) {
+          return {
+            'success': false,
+            'error': 'User not found in Supabase credentials.',
+          };
+        }
+
+        final meta = user.userMetadata ?? {};
+        String role = meta['role']?.toString() ?? 'artisan';
+        String name = meta['name']?.toString() ?? user.email?.split('@').first ?? 'User';
+        String phone = meta['phone']?.toString() ?? '';
+
+        // Query database profile if available
+        try {
+          final profileRow = await client!.from('profiles').select().eq('user_id', user.id).maybeSingle();
+          if (profileRow != null) {
+            role = profileRow['role']?.toString() ?? role;
+            name = profileRow['name']?.toString() ?? name;
+            phone = profileRow['phone']?.toString() ?? phone;
+          }
+        } catch (_) {}
+
+        return {
+          'success': true,
+          'user_id': user.id,
+          'email': user.email ?? cleanEmail,
+          'name': name,
+          'phone': phone,
+          'role': role,
+          'session': authResponse.session,
+          'message': 'Welcome back, $name!',
+        };
+      } on AuthException catch (authErr) {
+        debugPrint('⚠️ Supabase AuthException during sign in: ${authErr.message}');
+        return {
+          'success': false,
+          'error': authErr.message,
+          'isAuthException': true,
+        };
+      } catch (e) {
+        debugPrint('⚠️ General error during Supabase sign in: $e');
+        return {
+          'success': false,
+          'error': e.toString(),
+        };
+      }
+    }
+
+    return {
+      'success': false,
+      'error': 'Supabase not connected. Please login via local credentials or configure Supabase URL.',
+      'is_offline': true,
+    };
+  }
+
+  /// Send Phone OTP via Supabase Auth
+  Future<Map<String, dynamic>> sendOtpWithSupabaseAuth({required String phone}) async {
+    final cleanPhone = phone.trim();
+    if (_isLive && client != null) {
+      try {
+        await client!.auth.signInWithOtp(phone: cleanPhone);
+        return {
+          'success': true,
+          'message': 'OTP sent to $cleanPhone via Supabase SMS',
+        };
+      } on AuthException catch (e) {
+        return {
+          'success': false,
+          'error': e.message,
+        };
+      } catch (e) {
+        return {
+          'success': false,
+          'error': e.toString(),
+        };
+      }
+    }
+
+    return {
+      'success': true,
+      'is_local': true,
+      'message': 'Local OTP simulation active',
+    };
+  }
+
+  /// Verify Phone OTP via Supabase Auth
+  Future<Map<String, dynamic>> verifyOtpWithSupabaseAuth({
+    required String phone,
+    required String token,
+  }) async {
+    final cleanPhone = phone.trim();
+    final cleanToken = token.trim();
+
+    if (_isLive && client != null) {
+      try {
+        final res = await client!.auth.verifyOTP(
+          phone: cleanPhone,
+          token: cleanToken,
+          type: OtpType.sms,
+        );
+        final user = res.user;
+        return {
+          'success': true,
+          'user_id': user?.id,
+          'session': res.session,
+        };
+      } on AuthException catch (e) {
+        return {
+          'success': false,
+          'error': e.message,
+        };
+      } catch (e) {
+        return {
+          'success': false,
+          'error': e.toString(),
+        };
+      }
+    }
+
+    return {
+      'success': true,
+      'is_local': true,
+    };
+  }
+
+  /// Send Password Reset Email via Supabase Auth
+  Future<Map<String, dynamic>> sendPasswordReset(String email) async {
+    final cleanEmail = email.trim().toLowerCase();
+    if (_isLive && client != null) {
+      try {
+        await client!.auth.resetPasswordForEmail(cleanEmail);
+        return {
+          'success': true,
+          'message': 'Password reset link sent to $cleanEmail',
+        };
+      } on AuthException catch (e) {
+        return {
+          'success': false,
+          'error': e.message,
+        };
+      } catch (e) {
+        return {
+          'success': false,
+          'error': e.toString(),
+        };
+      }
+    }
+    return {
+      'success': true,
+      'message': 'Password reset request recorded for $cleanEmail',
+    };
+  }
+
+  /// Sign Out from Supabase Auth
+  Future<void> signOutSupabaseAuth() async {
+    if (_isLive && client != null) {
+      try {
+        await client!.auth.signOut();
+      } catch (e) {
+        debugPrint('⚠️ Supabase signOut error: $e');
+      }
     }
   }
 
@@ -156,6 +445,10 @@ class SupabaseService {
       'status': 'synced',
     };
   }
+
+  // ==========================================
+  // PRODUCTS & ORDERS DATABASE METHODS
+  // ==========================================
 
   /// Fetch products from Supabase `products` table
   Future<List<ProductModel>> fetchProducts() async {

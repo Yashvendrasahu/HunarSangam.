@@ -1,6 +1,8 @@
 // lib/screens/digital_visiting_card_screen.dart
 
 import 'package:flutter/material.dart';
+import '../widgets/craft_image.dart';
+import '../utils/craft_assets.dart';
 
 class DigitalVisitingCardScreen extends StatefulWidget {
   final VoidCallback? onBack;
@@ -412,20 +414,13 @@ class _DigitalVisitingCardScreenState extends State<DigitalVisitingCardScreen> {
                     Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        ClipRRect(
+                        CraftImage(
+                          imageSource: CraftAssets.artisanRamuKumar,
+                          craftCategoryOrTitle: 'Artisan',
+                          width: 58.0,
+                          height: 58.0,
                           borderRadius: BorderRadius.circular(16.0),
-                          child: Image.network(
-                            'https://images.unsplash.com/photo-1544816155-12df9643f363?w=300&auto=format&fit=crop&q=80',
-                            width: 58.0,
-                            height: 58.0,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Container(
-                              width: 58.0,
-                              height: 58.0,
-                              color: const Color(0xFFF0DDD0),
-                              child: const Icon(Icons.person, color: Color(0xFF8C3A16), size: 32.0),
-                            ),
-                          ),
+                          fit: BoxFit.cover,
                         ),
                         Positioned(
                           right: -3.0,

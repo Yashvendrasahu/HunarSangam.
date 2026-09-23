@@ -2,6 +2,8 @@
 // My Craft Story Screen (AI-Powered Voice-First Artisan Storytelling)
 import 'package:flutter/material.dart';
 import '../services/hardware_service.dart';
+import '../widgets/craft_image.dart';
+import '../utils/craft_assets.dart';
 
 class CraftStoryScreen extends StatefulWidget {
   final VoidCallback? onBack;
@@ -274,20 +276,13 @@ class _CraftStoryScreenState extends State<CraftStoryScreen> {
               // Avatar with Verified Badge
               Stack(
                 children: [
-                  ClipRRect(
+                  CraftImage(
+                    imageSource: CraftAssets.artisanRamuKumar,
+                    craftCategoryOrTitle: 'Artisan',
+                    width: 56.0,
+                    height: 56.0,
                     borderRadius: BorderRadius.circular(16.0),
-                    child: Image.network(
-                      'https://images.unsplash.com/photo-1544816155-12df9643f363?w=300&auto=format&fit=crop&q=80',
-                      width: 56.0,
-                      height: 56.0,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        width: 56.0,
-                        height: 56.0,
-                        color: const Color(0xFFF0DFD3),
-                        child: const Icon(Icons.person, color: Color(0xFF8C3A16)),
-                      ),
-                    ),
+                    fit: BoxFit.cover,
                   ),
                   Positioned(
                     bottom: 0,

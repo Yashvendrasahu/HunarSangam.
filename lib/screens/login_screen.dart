@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../models/onboarding_state.dart';
 import '../models/buyer_onboarding_model.dart';
 import '../services/auth_service.dart';
+import '../services/supabase_service.dart';
+import '../services/supabase_config.dart';
 import '../widgets/brand_logo_card.dart';
 import '../widgets/api_config_dialog.dart';
 import 'artisan_home_screen.dart';
@@ -87,6 +89,74 @@ class _LoginScreenState extends State<LoginScreen> {
       _passwordController.text = 'password123';
       _errorMessage = null;
     });
+  }
+
+  void _showForgotPasswordDialog() {
+    final resetController = TextEditingController(text: _contactController.text.contains('@') ? _contactController.text : '');
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        title: Row(
+          children: const [
+            Icon(Icons.lock_reset, color: Color(0xFFA84318)),
+            SizedBox(width: 8),
+            Text('Reset Password', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Enter your registered email address. We will send you a secure password reset link via Supabase Auth.',
+              style: TextStyle(fontSize: 13, color: Color(0xFF5D4037)),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: resetController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                hintText: 'name@example.com',
+                prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFFA84318)),
+                filled: true,
+                fillColor: const Color(0xFFF9F5F1),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE5D5CB))),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final email = resetController.text.trim();
+              if (email.isNotEmpty && email.contains('@')) {
+                Navigator.pop(ctx);
+                await SupabaseService().sendPasswordReset(email);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('📨 Password reset link sent to $email via Supabase Auth!'),
+                      backgroundColor: const Color(0xFF2E7D32),
+                    ),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFA84318),
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Send Reset Link'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _handleSendOtp() async {
@@ -463,6 +533,22 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                             ),
                           ],
+                        ),
+                      ),
+                      const SizedBox(height: 6.0),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: _showForgotPasswordDialog,
+                          style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                          child: const Text(
+                            'Forgot Password? / पासवर्ड भूल गए?',
+                            style: TextStyle(
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFFA84318),
+                            ),
+                          ),
                         ),
                       ),
                     ] else ...[

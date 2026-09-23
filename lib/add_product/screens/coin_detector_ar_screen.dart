@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/product_draft.dart';
 import '../widgets/artisan_bottom_navigation.dart';
 import '../widgets/artisan_studio_tips.dart';
+import '../../widgets/craft_image.dart';
 
 /// Screen matching 'p3 — Camera-First Add Photo with 10 rupes.png'
 /// Step 1 of 2 • Product Photography • ₹10 Coin Size Detector with Live AR Overlay
@@ -81,15 +82,33 @@ class CoinDetectorArScreen extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16.0),
-                  image: const DecorationImage(
-                    image: NetworkImage(
-                      'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&auto=format&fit=crop&q=80',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
                 ),
+                clipBehavior: Clip.antiAlias,
                 child: Stack(
+                  fit: StackFit.expand,
                   children: [
+                    // REAL CAPTURED PHOTO / CRAFT IMAGE
+                    CraftImage(
+                      imageSource: draft.photoUrl,
+                      craftCategoryOrTitle: draft.category.isNotEmpty ? draft.category : draft.title,
+                      fit: BoxFit.cover,
+                    ),
+
+                    // Subtle Dark gradient for AR contrast
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.3),
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.4),
+                          ],
+                        ),
+                      ),
+                    ),
+
                     // Corner Brackets
                     Positioned(
                       top: 14,
@@ -182,12 +201,12 @@ class CoinDetectorArScreen extends StatelessWidget {
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
-                              children: const [
-                                Icon(Icons.straighten, size: 11, color: Color(0xFF69F0AE)),
-                                SizedBox(width: 4.0),
+                              children: [
+                                const Icon(Icons.straighten, size: 11, color: Color(0xFF69F0AE)),
+                                const SizedBox(width: 4.0),
                                 Text(
-                                  'Top: 12.4 in (31.5 cm)',
-                                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white),
+                                  'Top: ${draft.diameterIn.toStringAsFixed(1)} in (${(draft.diameterIn * 2.54).toStringAsFixed(1)} cm)',
+                                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white),
                                 ),
                               ],
                             ),
@@ -196,7 +215,7 @@ class CoinDetectorArScreen extends StatelessWidget {
                       ),
                     ),
 
-                    // Base Measurement Line & Tag: Base 8.1 in (20.5 cm)
+                    // Base Measurement Line & Tag
                     Positioned(
                       bottom: 120,
                       left: 75,
@@ -249,10 +268,13 @@ class CoinDetectorArScreen extends StatelessWidget {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text('Height', style: TextStyle(fontSize: 9, color: Color(0xFF69F0AE), fontWeight: FontWeight.w700)),
-                                Text('6.2 in (15.7 cm)', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w800, color: Colors.white)),
-                                Text('±0.1 cm', style: TextStyle(fontSize: 8, color: Colors.white70)),
+                              children: [
+                                const Text('Height', style: TextStyle(fontSize: 9, color: Color(0xFF69F0AE), fontWeight: FontWeight.w700)),
+                                Text(
+                                  '${draft.heightIn.toStringAsFixed(1)} in (${(draft.heightIn * 2.54).toStringAsFixed(1)} cm)',
+                                  style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w800, color: Colors.white),
+                                ),
+                                const Text('±0.1 cm', style: TextStyle(fontSize: 8, color: Colors.white70)),
                               ],
                             ),
                           ),
@@ -337,7 +359,7 @@ class CoinDetectorArScreen extends StatelessWidget {
                       ),
                       child: const Center(
                         child: Text(
-                          'Click',
+                          'Next',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 13,

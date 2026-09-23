@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/product_draft.dart';
 import '../widgets/distribution_channels_card.dart';
 import '../widgets/artisan_bottom_navigation.dart';
+import '../../widgets/craft_image.dart';
 
 /// Screen matching 'p9-final preview ar.png'
 /// Preview Product • Active Listing
@@ -101,10 +102,9 @@ class ProductFinalPreviewScreen extends StatelessWidget {
                           // Photo with Verified Dimensions and ₹10 Coin badges
                           Stack(
                             children: [
-                              Image.network(
-                                draft.photoUrl.isNotEmpty
-                                    ? draft.photoUrl
-                                    : 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&auto=format&fit=crop&q=80',
+                              CraftImage(
+                                imageSource: draft.photoUrl,
+                                craftCategoryOrTitle: draft.category.isNotEmpty ? draft.category : draft.title,
                                 height: 165.0,
                                 width: double.infinity,
                                 fit: BoxFit.cover,

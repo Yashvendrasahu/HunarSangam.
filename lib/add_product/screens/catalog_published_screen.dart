@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/product_draft.dart';
 import '../widgets/distribution_channels_card.dart';
 import '../widgets/artisan_bottom_navigation.dart';
+import '../../widgets/craft_image.dart';
 
 /// Screen matching 'p10 — Product Finalized & ONDC Ready.png'
 /// Catalog Published! • Active Listing
@@ -301,10 +302,9 @@ class CatalogPublishedScreen extends StatelessWidget {
                           // Photo
                           Stack(
                             children: [
-                              Image.network(
-                                draft.photoUrl.isNotEmpty
-                                    ? draft.photoUrl
-                                    : 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&auto=format&fit=crop&q=80',
+                              CraftImage(
+                                imageSource: draft.photoUrl,
+                                craftCategoryOrTitle: draft.category.isNotEmpty ? draft.category : draft.title,
                                 height: 165.0,
                                 width: double.infinity,
                                 fit: BoxFit.cover,

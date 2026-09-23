@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import '../models/product_draft.dart';
 import '../widgets/artisan_bottom_navigation.dart';
+import '../../widgets/craft_image.dart';
+import '../../utils/craft_assets.dart';
 
 /// Screen 1: Matches 'ar--p1-Artisan Product Catalog.png'
 /// Displays artisan cluster status, 4 key metrics, "Add products by clicking 🎙️" CTA,
@@ -95,6 +97,24 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                         const SizedBox(height: 14.0),
 
                         // Product Cards
+                        if (widget.draft.isPublished || (widget.draft.photoUrl.isNotEmpty && widget.draft.title.isNotEmpty))
+                          _buildCardWrapper(
+                            imageUrl: widget.draft.photoUrl,
+                            badgeText: 'Active • ONDC Ready',
+                            badgeColor: const Color(0xFF2E7D32),
+                            sizeText: 'Size: ${widget.draft.diameterIn.toStringAsFixed(1)}" × ${widget.draft.heightIn.toStringAsFixed(1)}"',
+                            title: widget.draft.title,
+                            subtitle: 'GI Tag: ${widget.draft.giCluster} (${widget.draft.giRegNumber})',
+                            price: '₹${widget.draft.basePrice.toInt()}',
+                            unit: '/ piece',
+                            moqText: 'Wholesale MOQ: ${widget.draft.dailyCapacityPcs > 0 ? widget.draft.dailyCapacityPcs : 20} pcs',
+                            views: '12 Views (New)',
+                            inquiries: 'Just Listed',
+                            stock: '${widget.draft.dailyCapacityPcs * 5} in Stock',
+                            hasAudio: widget.draft.voiceClipTranscription.isNotEmpty,
+                          ),
+                        if (widget.draft.isPublished || (widget.draft.photoUrl.isNotEmpty && widget.draft.title.isNotEmpty))
+                          const SizedBox(height: 14.0),
                         _buildProductCard1(),
                         const SizedBox(height: 14.0),
                         _buildProductCard2(),
@@ -677,8 +697,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
   // 7. Product Card 1
   Widget _buildProductCard1() {
     return _buildCardWrapper(
-      imageUrl:
-          'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80',
+      imageUrl: CraftAssets.bambooBasket,
       badgeText: 'Active • ONDC Ready',
       badgeColor: const Color(0xFF2E7D32),
       sizeText: 'Size: 12.4" × 6.2"',
@@ -697,8 +716,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
   // 8. Product Card 2
   Widget _buildProductCard2() {
     return _buildCardWrapper(
-      imageUrl:
-          'https://images.unsplash.com/photo-1584589167171-541ce45f1eea?auto=format&fit=crop&w=800&q=80',
+      imageUrl: CraftAssets.bambooPlanter,
       badgeText: 'Active • ONDC Ready',
       badgeColor: const Color(0xFF2E7D32),
       sizeText: 'Size: 14" × 10"',
@@ -717,8 +735,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
   // 9. Product Card 3
   Widget _buildProductCard3() {
     return _buildCardWrapper(
-      imageUrl:
-          'https://images.unsplash.com/photo-1615865417491-9941019fbc00?auto=format&fit=crop&w=800&q=80',
+      imageUrl: CraftAssets.bambooLamp,
       badgeText: 'Active • HunarSangam Live',
       badgeColor: const Color(0xFFA84318),
       sizeText: 'Size: 10" × 8"',
@@ -748,18 +765,12 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
         children: [
           Stack(
             children: [
-              Image.network(
-                'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80',
+              CraftImage(
+                imageSource: CraftAssets.brassVase,
+                craftCategoryOrTitle: 'Brass & Bell Metal',
                 height: 140.0,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (ctx, err, stack) => Container(
-                  height: 140.0,
-                  color: const Color(0xFFF3E7DF),
-                  child: const Center(
-                    child: Icon(Icons.palette_outlined, size: 40.0, color: Color(0xFF8C3A16)),
-                  ),
-                ),
               ),
               Positioned(
                 top: 8.0,
@@ -969,18 +980,12 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
         children: [
           Stack(
             children: [
-              Image.network(
-                imageUrl,
+              CraftImage(
+                imageSource: imageUrl,
+                craftCategoryOrTitle: title,
                 height: 150.0,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (ctx, err, stack) => Container(
-                  height: 150.0,
-                  color: const Color(0xFFF3E7DF),
-                  child: const Center(
-                    child: Icon(Icons.palette_outlined, size: 40.0, color: Color(0xFF8C3A16)),
-                  ),
-                ),
               ),
               Positioned(
                 top: 8.0,

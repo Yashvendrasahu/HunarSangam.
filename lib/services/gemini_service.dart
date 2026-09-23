@@ -466,11 +466,11 @@ Return ONLY valid JSON:
       return '';
     }
 
-    final modelsToTry = <String>[
+    final modelsToTry = <String>{
       if (_activeModel.isNotEmpty) _activeModel,
       ..._availableDiscoveredModels,
       ..._candidateModels,
-    ].toSet().toList();
+    }.toList();
 
     for (final model in modelsToTry) {
       for (final apiVersion in ['v1beta', 'v1']) {
