@@ -25,16 +25,18 @@ class HardwareService {
   bool _isPlayingAudio = false;
   bool get isPlayingAudio => _isPlayingAudio;
 
-  /// REAL CAMERA: Capture image from device camera
+  /// REAL CAMERA: Capture image from device camera with Web & native fallbacks
   Future<XFile?> captureImageFromCamera({
     double? maxWidth = 1920,
     double? maxHeight = 1080,
     int? imageQuality = 85,
   }) async {
     try {
-      final status = await Permission.camera.request();
-      if (!status.isGranted && !status.isLimited) {
-        debugPrint('Camera permission denied');
+      if (!kIsWeb) {
+        final status = await Permission.camera.request();
+        if (!status.isGranted && !status.isLimited) {
+          debugPrint('Camera permission denied');
+        }
       }
       final XFile? photo = await _picker.pickImage(
         source: ImageSource.camera,
@@ -45,7 +47,20 @@ class HardwareService {
       return photo;
     } catch (e) {
       debugPrint('Error capturing photo from camera: $e');
-      return null;
+      // If camera capture fails (e.g. Unsupported VideoFrame/createImageBitmap on Web),
+      // try falling back gracefully to gallery file picker
+      try {
+        final XFile? fallback = await _picker.pickImage(
+          source: ImageSource.gallery,
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+          imageQuality: imageQuality,
+        );
+        return fallback;
+      } catch (fallbackErr) {
+        debugPrint('Fallback gallery pick also failed: $fallbackErr');
+        return null;
+      }
     }
   }
 
@@ -56,6 +71,12 @@ class HardwareService {
     int? imageQuality = 85,
   }) async {
     try {
+      if (!kIsWeb) {
+        final status = await Permission.photos.request();
+        if (!status.isGranted && !status.isLimited) {
+          debugPrint('Photos permission denied');
+        }
+      }
       final XFile? image = await _picker.pickImage(
         source: ImageSource.gallery,
         maxWidth: maxWidth,
@@ -77,10 +98,12 @@ class HardwareService {
     VoidCallback? onStopped,
   }) async {
     try {
-      final micStatus = await Permission.microphone.request();
-      if (!micStatus.isGranted && !micStatus.isLimited) {
-        onError?.call('Microphone permission denied');
-        return false;
+      if (!kIsWeb) {
+        final micStatus = await Permission.microphone.request();
+        if (!micStatus.isGranted && !micStatus.isLimited) {
+          onError?.call('Microphone permission denied');
+          return false;
+        }
       }
 
       if (!_isSpeechInitialized) {
