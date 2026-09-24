@@ -1,5 +1,7 @@
 // lib/screens/buyer_onboarding_step1_screen.dart
 
+import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/buyer_onboarding_model.dart';
@@ -38,6 +40,11 @@ class _BuyerOnboardingStep1ScreenState
   String? _phoneError;
   String? _emailError;
 
+  bool _isEmailVerified = false;
+  String _verifiedEmail = '';
+  String _generatedOtp = '';
+  bool _isSendingOtp = false;
+
   static const Color _primaryRust = Color(0xFF9C3C18);
   static const Color _bgCanvas = Color(0xFFFDFBF9);
   static const Color _borderSubtle = Color(0xFFE5D5CB);
@@ -69,6 +76,10 @@ class _BuyerOnboardingStep1ScreenState
     );
     _useWhatsApp = widget.initialModel.useWhatsAppNotifications;
     _selectedBusinessType = widget.initialModel.businessType;
+    _isEmailVerified = widget.initialModel.isVerified;
+    if (_isEmailVerified && widget.initialModel.workEmail.isNotEmpty) {
+      _verifiedEmail = widget.initialModel.workEmail.trim();
+    }
   }
 
   @override
@@ -96,6 +107,205 @@ class _BuyerOnboardingStep1ScreenState
     return nameErr == null && bizErr == null && phoneErr == null && emailErr == null;
   }
 
+  String _generateRandomOtp() {
+    final rand = Random();
+    return (100000 + rand.nextInt(900000)).toString();
+  }
+
+  Future<void> _initiateEmailVerification() async {
+    final email = _emailController.text.trim();
+    final emailErr = InputValidators.validateEmail(email, required: true);
+    if (emailErr != null) {
+      setState(() => _emailError = emailErr);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(emailErr), backgroundColor: const Color(0xFFC62828)),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSendingOtp = true;
+      _emailError = null;
+    });
+
+    await Future.delayed(const Duration(milliseconds: 500));
+    final newOtp = _generateRandomOtp();
+
+    setState(() {
+      _generatedOtp = newOtp;
+      _isSendingOtp = false;
+    });
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('📩 Verification OTP sent to $email (Code: $newOtp)'),
+        backgroundColor: _primaryRust,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+
+    _showBuyerOtpDialog(email, newOtp);
+  }
+
+  void _showBuyerOtpDialog(String email, String initialOtp) {
+    final otpControllers = List.generate(6, (_) => TextEditingController());
+    final focusNodes = List.generate(6, (_) => FocusNode());
+    String currentOtp = initialOtp;
+    int resendSeconds = 30;
+    Timer? resendTimer;
+    String? dialogError;
+    bool isVerifying = false;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) {
+        return StatefulBuilder(
+          builder: (modalContext, setDialogState) {
+            resendTimer ??= Timer.periodic(const Duration(seconds: 1), (t) {
+              if (resendSeconds > 0) {
+                setDialogState(() => resendSeconds--);
+              } else {
+                t.cancel();
+              }
+            });
+
+            void handleVerifyCode() async {
+              final enteredCode = otpControllers.map((c) => c.text.trim()).join();
+              if (enteredCode.length < 6) {
+                setDialogState(() => dialogError = 'Please enter complete 6-digit OTP');
+                return;
+              }
+
+              setDialogState(() {
+                isVerifying = true;
+                dialogError = null;
+              });
+
+              await Future.delayed(const Duration(milliseconds: 500));
+
+              if (enteredCode == currentOtp) {
+                resendTimer?.cancel();
+                if (mounted) {
+                  setState(() {
+                    _isEmailVerified = true;
+                    _verifiedEmail = email;
+                  });
+                }
+                if (dialogCtx.mounted) Navigator.of(dialogCtx).pop();
+
+                if (modalContext.mounted) {
+                  ScaffoldMessenger.of(modalContext).showSnackBar(
+                    const SnackBar(
+                      content: Text('✓ Official Work Email verified successfully!'),
+                      backgroundColor: Color(0xFF2E7D32),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              } else {
+                setDialogState(() {
+                  isVerifying = false;
+                  dialogError = 'Invalid OTP code. Please enter the valid 6 digits.';
+                });
+              }
+            }
+
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              backgroundColor: Colors.white,
+              title: Row(
+                children: const [
+                  Icon(Icons.verified_outlined, color: _primaryRust, size: 24),
+                  SizedBox(width: 10),
+                  Text('Verify Work Email', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _textDark)),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Enter the 6-digit code sent to $email:', style: const TextStyle(fontSize: 12.5, color: _textMuted)),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(6, (index) {
+                      return SizedBox(
+                        width: 38,
+                        height: 44,
+                        child: TextField(
+                          controller: otpControllers[index],
+                          focusNode: focusNodes[index],
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          maxLength: 1,
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textDark),
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          decoration: InputDecoration(
+                            counterText: '',
+                            filled: true,
+                            fillColor: const Color(0xFFFAFAFA),
+                            contentPadding: EdgeInsets.zero,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _borderSubtle)),
+                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _primaryRust, width: 2)),
+                          ),
+                          onChanged: (val) {
+                            if (val.isNotEmpty && index < 5) {
+                              focusNodes[index + 1].requestFocus();
+                            } else if (val.isEmpty && index > 0) {
+                              focusNodes[index - 1].requestFocus();
+                            }
+                            setDialogState(() => dialogError = null);
+                          },
+                        ),
+                      );
+                    }),
+                  ),
+                  if (dialogError != null) ...[
+                    const SizedBox(height: 8),
+                    Text(dialogError!, style: const TextStyle(color: Color(0xFFC62828), fontSize: 11.5, fontWeight: FontWeight.w600)),
+                  ],
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          for (int i = 0; i < 6; i++) {
+                            if (i < currentOtp.length) otpControllers[i].text = currentOtp[i];
+                          }
+                          setDialogState(() => dialogError = null);
+                        },
+                        child: Text('Auto-fill ($currentOtp)', style: const TextStyle(fontSize: 11, color: _primaryRust, fontWeight: FontWeight.bold)),
+                      ),
+                      Text(resendSeconds > 0 ? 'Resend in ${resendSeconds}s' : 'Ready to resend', style: const TextStyle(fontSize: 11, color: _textMuted)),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    resendTimer?.cancel();
+                    Navigator.of(dialogCtx).pop();
+                  },
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: isVerifying ? null : handleVerifyCode,
+                  style: ElevatedButton.styleFrom(backgroundColor: _primaryRust, foregroundColor: Colors.white),
+                  child: isVerifying ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Text('Verify'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   void _handleContinue() {
     if (!_validateFields()) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -108,6 +318,20 @@ class _BuyerOnboardingStep1ScreenState
       return;
     }
 
+    final email = _emailController.text.trim();
+    if (!_isEmailVerified || _verifiedEmail != email) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('⚠️ जब तक ईमेल वेरीफाई नहीं होगा, प्रोसेस आगे नहीं बढ़ सकता। / Please verify work email to continue'),
+          backgroundColor: Color(0xFFD84315),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 4),
+        ),
+      );
+      _initiateEmailVerification();
+      return;
+    }
+
     final updatedModel = widget.initialModel.copyWith(
       yourName: _nameController.text.trim(),
       businessName: _businessNameController.text.trim(),
@@ -115,6 +339,7 @@ class _BuyerOnboardingStep1ScreenState
       workEmail: _emailController.text.trim(),
       useWhatsAppNotifications: _useWhatsApp,
       businessType: _selectedBusinessType,
+      isVerified: true,
     );
     widget.onContinue?.call(updatedModel);
   }
@@ -510,27 +735,79 @@ class _BuyerOnboardingStep1ScreenState
 
   Widget _buildEmailField() {
     final hasErr = _emailError != null;
+    final isVerifiedForCurrentText = _isEmailVerified && _verifiedEmail == _emailController.text.trim();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildFieldLabel('Work Email Address'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildFieldLabel('Work Email Address *'),
+            if (isVerifiedForCurrentText)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8F5E9),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.check_circle_rounded, size: 12, color: Color(0xFF2E7D32)),
+                    SizedBox(width: 4),
+                    Text(
+                      'Verified / सत्यापित',
+                      style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
+                    ),
+                  ],
+                ),
+              )
+            else
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF3E0),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Text(
+                  'Verification Required',
+                  style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: Color(0xFFE65100)),
+                ),
+              ),
+          ],
+        ),
         const SizedBox(height: 6.0),
         Container(
           decoration: BoxDecoration(
-            color: hasErr ? const Color(0xFFFFF5F5) : Colors.white,
-            border: Border.all(color: hasErr ? const Color(0xFFC62828) : _borderSubtle, width: hasErr ? 1.5 : 1.0),
+            color: hasErr
+                ? const Color(0xFFFFF5F5)
+                : isVerifiedForCurrentText
+                    ? const Color(0xFFF1F8E9)
+                    : Colors.white,
+            border: Border.all(
+              color: hasErr
+                  ? const Color(0xFFC62828)
+                  : isVerifiedForCurrentText
+                      ? const Color(0xFFA5D6A7)
+                      : _borderSubtle,
+              width: (hasErr || isVerifiedForCurrentText) ? 1.5 : 1.0,
+            ),
             borderRadius: BorderRadius.circular(12.0),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: Row(
             children: [
-              Icon(Icons.mail_outline, color: hasErr ? const Color(0xFFC62828) : const Color(0xFF8D6E63), size: 18),
+              Icon(Icons.mail_outline, color: hasErr ? const Color(0xFFC62828) : _primaryRust, size: 18),
               const SizedBox(width: 8.0),
               Expanded(
                 child: TextField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   onChanged: (val) {
+                    if (_isEmailVerified && val.trim() != _verifiedEmail) {
+                      setState(() => _isEmailVerified = false);
+                    }
                     if (_emailError != null) {
                       setState(() => _emailError = InputValidators.validateEmail(val, required: true));
                     }
@@ -543,6 +820,26 @@ class _BuyerOnboardingStep1ScreenState
                   ),
                 ),
               ),
+              if (isVerifiedForCurrentText)
+                const Icon(Icons.check_circle, color: Color(0xFF2E7D32), size: 20)
+              else
+                TextButton(
+                  onPressed: _isSendingOtp ? null : _initiateEmailVerification,
+                  style: TextButton.styleFrom(
+                    backgroundColor: const Color(0xFFFBF1EB),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: const BorderSide(color: _borderSubtle),
+                    ),
+                  ),
+                  child: _isSendingOtp
+                      ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: _primaryRust))
+                      : const Text(
+                          'Verify Email',
+                          style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold, color: _primaryRust),
+                        ),
+                ),
             ],
           ),
         ),
@@ -554,11 +851,13 @@ class _BuyerOnboardingStep1ScreenState
           ),
         ] else ...[
           const SizedBox(height: 4.0),
-          const Text(
-            '✉️ A verification link will be sent to this email address to verify your organization.',
+          Text(
+            isVerifiedForCurrentText
+                ? '✓ Work email verified and registered with Enterprise Sourcing Desk.'
+                : '✉️ Email verification is required to build your verified corporate buyer profile.',
             style: TextStyle(
               fontSize: 11,
-              color: Color(0xFF9C3C18),
+              color: isVerifiedForCurrentText ? const Color(0xFF2E7D32) : _primaryRust,
               fontWeight: FontWeight.w500,
             ),
           ),

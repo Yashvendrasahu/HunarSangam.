@@ -160,8 +160,8 @@ class _ProfileManagementScreenState extends State<ProfileManagementScreen>
         artisanName: cur.name,
         email: cur.email ?? '',
         phoneNumber: cur.phone ?? '',
-        artisanLocation: cur.location ?? 'Barabanki, Uttar Pradesh',
-        selectedCraft: cur.craftType ?? 'Bamboo & Cane',
+        artisanLocation: cur.location.isNotEmpty ? cur.location : 'Barabanki, Uttar Pradesh',
+        selectedCraft: cur.craftType.isNotEmpty ? cur.craftType : 'Bamboo & Cane',
         profilePhotoUrl: (cur.profileImage != null && cur.profileImage!.isNotEmpty)
             ? cur.profileImage!
             : CraftAssets.artisanRamuKumar,

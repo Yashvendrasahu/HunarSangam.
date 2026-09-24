@@ -26,6 +26,7 @@ class OnboardingState {
   final String experienceYears;
   final bool bulkProductionReady;
   final bool isProfileComplete;
+  final bool isEmailVerified;
 
   const OnboardingState({
     this.selectedRole = UserRole.none,
@@ -46,6 +47,7 @@ class OnboardingState {
     this.experienceYears = '10+ Years',
     this.bulkProductionReady = true,
     this.isProfileComplete = true,
+    this.isEmailVerified = false,
   });
 
   OnboardingState copyWith({
@@ -68,6 +70,7 @@ class OnboardingState {
     String? experienceYears,
     bool? bulkProductionReady,
     bool? isProfileComplete,
+    bool? isEmailVerified,
   }) {
     return OnboardingState(
       selectedRole: selectedRole ?? this.selectedRole,
@@ -88,6 +91,7 @@ class OnboardingState {
       experienceYears: experienceYears ?? this.experienceYears,
       bulkProductionReady: bulkProductionReady ?? this.bulkProductionReady,
       isProfileComplete: isProfileComplete ?? this.isProfileComplete,
+      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
     );
   }
 }
