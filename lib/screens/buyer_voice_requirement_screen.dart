@@ -154,7 +154,15 @@ class _BuyerVoiceRequirementScreenState extends State<BuyerVoiceRequirementScree
           ),
           IconButton(
             icon: const Icon(Icons.translate, color: terracotta, size: 20),
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('🌐 Voice Recognition Language: English & Hindi (Bilingual Speech Model)'),
+                  duration: Duration(seconds: 1),
+                ),
+              );
+            },
+            tooltip: 'Voice Language',
           ),
           const SizedBox(width: 6),
         ],
@@ -573,7 +581,14 @@ class _BuyerVoiceRequirementScreenState extends State<BuyerVoiceRequirementScree
                     ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('✍️ Edit fields above or record additional voice instructions to adjust requirement parameters.'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    },
                     child: const Text(
                       'Adjust',
                       style: TextStyle(color: terracotta, fontWeight: FontWeight.w700, fontSize: 13),

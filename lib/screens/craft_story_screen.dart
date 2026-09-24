@@ -775,7 +775,14 @@ class _CraftStoryScreenState extends State<CraftStoryScreen> {
 
           // Tap to Edit Button
           OutlinedButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('🎙️ Voice input active: Speak now in Hindi or English to enrich craft story.'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
             icon: const Icon(Icons.mic, size: 14.0, color: Color(0xFF8C2E18)),
             label: const Text(
               'Tap to edit or add details with voice',

@@ -228,7 +228,14 @@ class _CollaborationHubScreenState extends State<CollaborationHubScreen> {
               ),
             ],
           ),
-          onPressed: () {},
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('🔔 2 new collaboration requests from nearby cluster artisans'),
+                duration: Duration(seconds: 1),
+              ),
+            );
+          },
         ),
         const SizedBox(width: 8.0),
       ],
@@ -557,7 +564,14 @@ class _CollaborationHubScreenState extends State<CollaborationHubScreen> {
                 const SizedBox(width: 10.0),
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Request declined gracefully with cluster message.'),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                    },
                     icon: const Icon(Icons.close, size: 16, color: _textDark),
                     label: const Text('Decline', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: _textDark)),
                     style: OutlinedButton.styleFrom(
@@ -571,7 +585,25 @@ class _CollaborationHubScreenState extends State<CollaborationHubScreen> {
           ],
           Center(
             child: TextButton(
-              onPressed: () {},
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+                    title: const Text('Order & Craft Specs', style: TextStyle(fontWeight: FontWeight.w800)),
+                    content: const Text(
+                      '• Product: 500 Pcs Hand-carved Terracotta Planters\n'
+                      '• Target Date: 15 Oct\n'
+                      '• Payout: ₹45,000 via Escrow\n'
+                      '• Clay & Kiln provided by lead artisan.',
+                      style: TextStyle(height: 1.4),
+                    ),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+                    ],
+                  ),
+                );
+              },
               child: const Text(
                 'View Order & Craft Specs >',
                 style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: _textDark),
@@ -709,7 +741,11 @@ class _CollaborationHubScreenState extends State<CollaborationHubScreen> {
                 child: SizedBox(
                   height: 38,
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Request declined.')),
+                      );
+                    },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Color(0xFFE5D5CB)),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
@@ -854,7 +890,11 @@ class _CollaborationHubScreenState extends State<CollaborationHubScreen> {
                 child: SizedBox(
                   height: 36,
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Viewing collaborator artisan portfolio & profile.')),
+                      );
+                    },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Color(0xFFE5D5CB)),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),

@@ -70,7 +70,14 @@ class BuyerCompareArtisansScreen extends StatelessWidget {
           Container(
             margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
             child: OutlinedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('🔍 Comparison filters: Price/pc, Lead Time, Reliability & GI Authenticity'),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+              },
               icon: const Icon(Icons.tune, size: 14, color: Color(0xFF70645E)),
               label: const Text(
                 'Filter',

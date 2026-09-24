@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import '../widgets/brand_logo_card.dart';
+import '../widgets/buyer_bottom_nav_bar.dart';
 
 class BuyerOrdersHubScreen extends StatefulWidget {
   final VoidCallback? onBack;
@@ -61,7 +62,15 @@ class _BuyerOrdersHubScreenState extends State<BuyerOrdersHubScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.search, color: textDark),
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('🔍 Filter orders by PO #, artisan, or status'),
+                  duration: Duration(seconds: 1),
+                ),
+              );
+            },
+            tooltip: 'Search Orders',
           ),
           Container(
             margin: const EdgeInsets.only(right: 16),
@@ -323,10 +332,16 @@ class _BuyerOrdersHubScreenState extends State<BuyerOrdersHubScreen> {
               ],
             ),
           ),
-
-          // Bottom Navigation
-          _buildBottomNav(),
         ],
+      ),
+      bottomNavigationBar: BuyerBottomNavBar(
+        currentIndex: 3,
+        onTap: (idx) {
+          if (idx == 0) widget.onOpenHome?.call();
+          if (idx == 1) widget.onOpenDiscover?.call();
+          if (idx == 2) widget.onOpenRequirements?.call();
+          if (idx == 4) widget.onOpenProfile?.call();
+        },
       ),
     );
   }
@@ -870,48 +885,6 @@ class _BuyerOrdersHubScreenState extends State<BuyerOrdersHubScreen> {
                 ),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xFFEFE2D8))),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _buildNavItem(Icons.home_outlined, 'Home', false, widget.onOpenHome),
-          _buildNavItem(Icons.explore_outlined, 'Discover', false, widget.onOpenDiscover),
-          _buildNavItem(Icons.assignment_outlined, 'Requirement', false, widget.onOpenRequirements),
-          _buildNavItem(Icons.local_shipping, 'Order', true, () {}),
-          _buildNavItem(Icons.person_outline, 'Profile', false, widget.onOpenProfile),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isSelected, VoidCallback? onTap) {
-    const Color primaryRust = Color(0xFF9C3C18);
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: isSelected ? primaryRust : const Color(0xFF7A6A60), size: 22),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? primaryRust : const Color(0xFF7A6A60),
-              fontSize: 10,
-              fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
-            ),
           ),
         ],
       ),

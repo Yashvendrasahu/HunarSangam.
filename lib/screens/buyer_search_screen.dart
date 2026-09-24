@@ -432,13 +432,29 @@ class _BuyerSearchScreenState extends State<BuyerSearchScreen> {
       actions: [
         IconButton(
           icon: const Icon(Icons.translate, size: 20, color: Color(0xFF5D4037)),
-          onPressed: () {},
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('🌐 Language: English & Hindi voice search active'),
+                duration: Duration(seconds: 1),
+              ),
+            );
+          },
+          tooltip: 'Switch Language',
         ),
         Stack(
           children: [
             IconButton(
               icon: const Icon(Icons.notifications_none, size: 22, color: Color(0xFF5D4037)),
-              onPressed: () {},
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('🔔 You have 3 active cluster updates & quotes.'),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+              },
+              tooltip: 'Notifications',
             ),
             Positioned(
               right: 8,

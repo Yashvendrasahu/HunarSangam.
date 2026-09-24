@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import '../services/hardware_service.dart';
+import '../widgets/artisan_bottom_nav_bar.dart';
 
 /// Production-ready Flutter screen matching 'o2- order updation page.png'
 /// Order #HS1048 - Handmade Bamboo Baskets
@@ -1506,59 +1507,15 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           const SizedBox(height: 8.0),
 
           // 5-Tab Navigation Bar
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavTab(icon: Icons.storefront, label: 'Home', isSelected: false, tabIdx: 0),
-              _buildNavTab(icon: Icons.palette_outlined, label: 'Products', isSelected: false, tabIdx: 1),
-              _buildNavTab(icon: Icons.receipt_long, label: 'Orders', isSelected: true, tabIdx: 2),
-              _buildNavTab(icon: Icons.people_outline, label: 'Collaborate', isSelected: false, tabIdx: 3),
-              _buildNavTab(icon: Icons.person_outline, label: 'Profile', isSelected: false, tabIdx: 4),
-            ],
+          ArtisanBottomNavBar(
+            currentIndex: 2,
+            onTap: (idx) {
+              if (widget.onNavigateTab != null) {
+                widget.onNavigateTab!(idx);
+              }
+            },
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildNavTab({
-    required IconData icon,
-    required String label,
-    required bool isSelected,
-    required int tabIdx,
-  }) {
-    return InkWell(
-      onTap: () {
-        if (widget.onNavigateTab != null) {
-          widget.onNavigateTab!(tabIdx);
-        }
-      },
-      borderRadius: BorderRadius.circular(12.0),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFFCEEE6) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 20.0,
-              color: isSelected ? const Color(0xFF8C3A16) : const Color(0xFF7A685F),
-            ),
-            const SizedBox(height: 2.0),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10.0,
-                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                color: isSelected ? const Color(0xFF8C3A16) : const Color(0xFF7A685F),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

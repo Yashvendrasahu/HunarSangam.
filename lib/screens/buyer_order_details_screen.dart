@@ -3,6 +3,7 @@
 // Order Details & Status with Live Batch Status, Milestone Journey, 3-Stage Trust Escrow, Quality Checklist & Updates Log
 
 import 'package:flutter/material.dart';
+import '../widgets/buyer_bottom_nav_bar.dart';
 
 class BuyerOrderDetailsScreen extends StatefulWidget {
   final String orderId;
@@ -329,7 +330,34 @@ class _BuyerOrderDetailsScreenState extends State<BuyerOrderDetailsScreen> {
                         children: [
                           Expanded(
                             child: OutlinedButton.icon(
-                              onPressed: () {},
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                    title: const Text('Production Photos (प्रमाण)', style: TextStyle(fontWeight: FontWeight.w800)),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: Image.network(
+                                            'https://images.unsplash.com/photo-1590736969955-71cc94801759?auto=format&fit=crop&w=600&q=80',
+                                            height: 180,
+                                            width: double.infinity,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        const Text('Artisan Ramu Prajapati uploaded Stage 2 weaving proofs with GPS geo-tag timestamp.', style: TextStyle(fontSize: 12)),
+                                      ],
+                                    ),
+                                    actions: [
+                                      TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+                                    ],
+                                  ),
+                                );
+                              },
                               icon: const Icon(Icons.camera_alt_outlined, size: 14),
                               label: const Text('Track Photos', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                               style: OutlinedButton.styleFrom(
@@ -826,7 +854,14 @@ class _BuyerOrderDetailsScreenState extends State<BuyerOrderDetailsScreen> {
                         children: [
                           Expanded(
                             child: OutlinedButton.icon(
-                              onPressed: () {},
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('👤 Viewing Ramu Prajapati - Master Bamboo & Terracotta Artisan'),
+                                    duration: Duration(seconds: 1),
+                                  ),
+                                );
+                              },
                               icon: const Icon(Icons.person_outline, size: 14),
                               label: const Text('View Profile', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                               style: OutlinedButton.styleFrom(
@@ -923,10 +958,17 @@ class _BuyerOrderDetailsScreenState extends State<BuyerOrderDetailsScreen> {
               ],
             ),
           ),
-
-          // Bottom Navigation
-          _buildBottomNav(),
         ],
+      ),
+      bottomNavigationBar: BuyerBottomNavBar(
+        currentIndex: 3,
+        onTap: (idx) {
+          if (idx == 0) widget.onOpenHome?.call();
+          if (idx == 1) widget.onOpenDiscover?.call();
+          if (idx == 2) widget.onOpenRequirements?.call();
+          if (idx == 3) widget.onOpenOrders?.call();
+          if (idx == 4) widget.onOpenProfile?.call();
+        },
       ),
     );
   }
@@ -1150,48 +1192,6 @@ class _BuyerOrderDetailsScreenState extends State<BuyerOrderDetailsScreen> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(message, style: const TextStyle(fontSize: 10.5, color: Color(0xFF3B2A22), height: 1.3)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xFFEFE2D8))),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _buildNavItem(Icons.home_outlined, 'Home', false, widget.onOpenHome),
-          _buildNavItem(Icons.explore_outlined, 'Discover', false, widget.onOpenDiscover),
-          _buildNavItem(Icons.assignment_outlined, 'Requirement', false, widget.onOpenRequirements),
-          _buildNavItem(Icons.local_shipping, 'Order', true, widget.onOpenOrders),
-          _buildNavItem(Icons.person_outline, 'Profile', false, widget.onOpenProfile),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isSelected, VoidCallback? onTap) {
-    const Color primaryRust = Color(0xFF9C3C18);
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: isSelected ? primaryRust : const Color(0xFF7A6A60), size: 22),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? primaryRust : const Color(0xFF7A6A60),
-              fontSize: 10,
-              fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
-            ),
           ),
         ],
       ),

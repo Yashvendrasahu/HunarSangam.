@@ -1,6 +1,7 @@
 // lib/screens/suggested_collaborators_screen.dart
 import 'package:flutter/material.dart';
 import '../models/onboarding_state.dart';
+import '../widgets/artisan_bottom_nav_bar.dart';
 
 /// Screen 26: Suggested Collaborators matching 'o5 - suggested colloborater from page order updation page.png'
 class SuggestedCollaboratorsScreen extends StatefulWidget {
@@ -1775,62 +1776,14 @@ class _SuggestedCollaboratorsScreenState
 
   /// 8. Bottom Navigation Bar matching 5 tabs in image
   Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(color: Color(0xFFEADFD6), width: 1.0),
-        ),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(0, Icons.storefront_outlined, 'Home'),
-          _buildNavItem(1, Icons.palette_outlined, 'Products'),
-          _buildNavItem(2, Icons.receipt_long_outlined, 'Orders', isSelected: true),
-          _buildNavItem(3, Icons.group_outlined, 'Collaborate'),
-          _buildNavItem(4, Icons.person_outline, 'Profile'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(int index, IconData icon, String label, {bool isSelected = false}) {
-    final active = isSelected || _currentBottomNavIndex == index;
-    return InkWell(
-      onTap: () {
-        setState(() => _currentBottomNavIndex = index);
+    return ArtisanBottomNavBar(
+      currentIndex: _currentBottomNavIndex,
+      onTap: (idx) {
+        setState(() => _currentBottomNavIndex = idx);
         if (widget.onNavigateTab != null) {
-          widget.onNavigateTab!(index);
+          widget.onNavigateTab!(idx);
         }
       },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 3.0),
-            decoration: BoxDecoration(
-              color: active ? const Color(0xFFFDEFE7) : Colors.transparent,
-              borderRadius: BorderRadius.circular(12.0),
-            ),
-            child: Icon(
-              icon,
-              size: 22,
-              color: active ? const Color(0xFF8C3A16) : const Color(0xFF8A756C),
-            ),
-          ),
-          const SizedBox(height: 2.0),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10.5,
-              fontWeight: active ? FontWeight.w800 : FontWeight.w600,
-              color: active ? const Color(0xFF8C3A16) : const Color(0xFF8A756C),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

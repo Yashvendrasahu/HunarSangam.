@@ -284,7 +284,7 @@ class BuyerProfileScreen extends StatelessWidget {
                   ],
                 ),
                 TextButton.icon(
-                  onPressed: () {},
+                  onPressed: onEditProfile ?? () {},
                   icon: const Icon(Icons.edit, size: 14, color: terracotta),
                   label: const Text(
                     'Edit',
@@ -368,7 +368,50 @@ class BuyerProfileScreen extends StatelessWidget {
                   ],
                 ),
                 TextButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: Colors.white,
+                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+                      builder: (ctx) => Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Default Wholesale Criteria', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: textDark)),
+                            const SizedBox(height: 12),
+                            const Text('Select your preferred craft sectors for automatic RFQ matching:'),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 8,
+                              children: const [
+                                Chip(label: Text('Pottery & Ceramics'), backgroundColor: Color(0xFFFFF2EC)),
+                                Chip(label: Text('Handloom & Silk'), backgroundColor: Color(0xFFFFF2EC)),
+                                Chip(label: Text('Terracotta'), backgroundColor: Color(0xFFFFF2EC)),
+                                Chip(label: Text('Bamboo & Cane'), backgroundColor: Color(0xFFFFF2EC)),
+                                Chip(label: Text('Brass & Dhokra'), backgroundColor: Color(0xFFFFF2EC)),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(ctx);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Sourcing preferences updated successfully!')),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(backgroundColor: terracotta, foregroundColor: Colors.white),
+                                child: const Text('Save Preferences'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                   icon: const Icon(Icons.edit, size: 14, color: terracotta),
                   label: const Text(
                     'Edit',
@@ -544,21 +587,41 @@ class BuyerProfileScreen extends StatelessWidget {
                     icon: Icons.notifications_none,
                     title: 'Notifications',
                     subtitle: 'Order, requirement and message updates',
-                    onTap: () {},
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Push notifications & SMS alerts are enabled for your account.')),
+                      );
+                    },
                   ),
                   const Divider(height: 1, color: Color(0xFFF3ECE5), indent: 16, endIndent: 16),
                   _buildSettingTile(
                     icon: Icons.translate,
                     title: 'Language',
                     subtitle: 'English • Hindi voice translation enabled',
-                    onTap: () {},
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('App Language: English (Default). Auto voice translation active.')),
+                      );
+                    },
                   ),
                   const Divider(height: 1, color: Color(0xFFF3ECE5), indent: 16, endIndent: 16),
                   _buildSettingTile(
                     icon: Icons.help_outline,
                     title: 'Help & Support',
                     subtitle: 'Direct cluster liaison desk & FAQ',
-                    onTap: () {},
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          title: const Text('HunarSangam Trade Desk', style: TextStyle(fontWeight: FontWeight.w800)),
+                          content: const Text('24x7 Escrow & Dispute Resolution Support:\nEmail: trade@hunarsangam.gov.in\nHelpline: 1800-HUNAR-CARE'),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

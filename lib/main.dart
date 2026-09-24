@@ -38,6 +38,7 @@ import 'screens/buyer_profile_screen.dart';
 import 'screens/buyer_order_details_screen.dart';
 import 'screens/buyer_artisan_chat_screen.dart';
 import 'screens/conversations_list_screen.dart';
+import 'screens/profile_management_screen.dart';
 import 'services/supabase_service.dart';
 import 'services/auth_service.dart';
 
@@ -213,6 +214,7 @@ class _OnboardingFlowCoordinatorState extends State<OnboardingFlowCoordinator> {
       return ArtisanHomeScreen(
         state: _state,
         onLogout: _logout,
+        onStateChanged: _updateState,
       );
     }
 
@@ -547,12 +549,33 @@ class _OnboardingFlowCoordinatorState extends State<OnboardingFlowCoordinator> {
           _buyerStep = 0;
           _isLoggedIn = false;
         }),
+        onEditProfile: () => setState(() => _buyerStep = 25),
         onNavTap: (idx) {
           if (idx == 0) setState(() => _buyerStep = 5);
           if (idx == 1) setState(() => _buyerStep = 6);
           if (idx == 2) setState(() => _buyerStep = 12);
           if (idx == 3) setState(() => _buyerStep = 20);
           if (idx == 4) setState(() => _buyerStep = 21);
+        },
+      );
+    }
+
+    // Screen: Enterprise Buyer & Artisan Profile Management
+    if (_buyerStep == 25) {
+      return ProfileManagementScreen(
+        buyerModel: _buyerModel,
+        artisanState: _state,
+        initialRole: UserRole.buyer,
+        onBack: () => setState(() => _buyerStep = 21),
+        onBuyerSaved: (updatedBuyer) {
+          setState(() {
+            _buyerModel = updatedBuyer;
+          });
+        },
+        onArtisanSaved: (updatedArtisan) {
+          setState(() {
+            _state = updatedArtisan;
+          });
         },
       );
     }

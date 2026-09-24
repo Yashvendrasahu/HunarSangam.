@@ -148,11 +148,27 @@ class _BuyerArtisanProfileScreenState extends State<BuyerArtisanProfileScreen> {
       actions: [
         IconButton(
           icon: const Icon(Icons.share_outlined, color: _textDark, size: 20),
-          onPressed: () {},
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('🔗 Sharing Artisan profile link (Ramu Prajapati)'),
+                backgroundColor: _primaryRust,
+              ),
+            );
+          },
+          tooltip: 'Share',
         ),
         IconButton(
           icon: const Icon(Icons.bookmark_border, color: _textDark, size: 22),
-          onPressed: () {},
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('⭐ Ramu Prajapati saved to your bookmarks'),
+                backgroundColor: _primaryRust,
+              ),
+            );
+          },
+          tooltip: 'Save Artisan',
         ),
         const SizedBox(width: 8.0),
       ],

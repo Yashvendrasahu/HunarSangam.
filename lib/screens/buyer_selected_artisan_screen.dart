@@ -69,11 +69,27 @@ class BuyerSelectedArtisanScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.share_outlined, color: textDark, size: 20),
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('🔗 Artisan Profile Link copied to clipboard (Ramu Prajapati)'),
+                  backgroundColor: terracotta,
+                ),
+              );
+            },
+            tooltip: 'Share Profile',
           ),
           IconButton(
             icon: const Icon(Icons.bookmark_border, color: textDark, size: 20),
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('⭐ Ramu Prajapati added to your Saved Artisans list'),
+                  backgroundColor: terracotta,
+                ),
+              );
+            },
+            tooltip: 'Save Artisan',
           ),
           const SizedBox(width: 4),
         ],

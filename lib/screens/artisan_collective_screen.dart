@@ -3,6 +3,7 @@
 // Form Artisan Collective & Cluster Collaboration Hub for B2B Bulk Orders
 
 import 'package:flutter/material.dart';
+import '../widgets/artisan_bottom_nav_bar.dart';
 
 /// Production-ready Flutter screen matching 'o4- collaboration from oreder page with other artisan.png'
 /// Screen: Form Artisan Collective (FabIndia PO #PO-FAB-9102 - 400 pcs)
@@ -1164,64 +1165,16 @@ class _ArtisanCollectiveScreenState extends State<ArtisanCollectiveScreen> {
   }
 
   Widget _buildBottomNavigationBar() {
-    final navItems = [
-      {'label': 'Home', 'icon': Icons.storefront_outlined},
-      {'label': 'Products', 'icon': Icons.palette_outlined},
-      {'label': 'Orders', 'icon': Icons.receipt_long_outlined},
-      {'label': 'Collaborate', 'icon': Icons.people_outline},
-      {'label': 'Profile', 'icon': Icons.person_outline},
-    ];
-
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: _borderSubtle)),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(navItems.length, (idx) {
-          final isSelected = _currentNavIndex == idx;
-          final item = navItems[idx];
-          return InkWell(
-            onTap: () {
-              setState(() {
-                _currentNavIndex = idx;
-              });
-              if (widget.onNavigateTab != null) {
-                widget.onNavigateTab!(idx);
-              }
-            },
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-              decoration: BoxDecoration(
-                color: isSelected ? _peachLight : Colors.transparent,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    item['icon'] as IconData,
-                    size: 20,
-                    color: isSelected ? _terracotta : _textMuted,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    item['label'] as String,
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
-                      color: isSelected ? _terracotta : _textMuted,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }),
-      ),
+    return ArtisanBottomNavBar(
+      currentIndex: _currentNavIndex,
+      onTap: (idx) {
+        setState(() {
+          _currentNavIndex = idx;
+        });
+        if (widget.onNavigateTab != null) {
+          widget.onNavigateTab!(idx);
+        }
+      },
     );
   }
 }

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/craft_image.dart';
 import '../utils/craft_assets.dart';
+import '../widgets/artisan_bottom_nav_bar.dart';
 
 class DigitalVisitingCardScreen extends StatefulWidget {
   final VoidCallback? onBack;
@@ -12,6 +13,7 @@ class DigitalVisitingCardScreen extends StatefulWidget {
   final VoidCallback? onAddToWallet;
   final VoidCallback? onVoiceRecordStory;
   final VoidCallback? onShareCard;
+  final VoidCallback? onEditProfile;
   final Function(int)? onBottomNavTapped;
 
   const DigitalVisitingCardScreen({
@@ -23,6 +25,7 @@ class DigitalVisitingCardScreen extends StatefulWidget {
     this.onAddToWallet,
     this.onVoiceRecordStory,
     this.onShareCard,
+    this.onEditProfile,
     this.onBottomNavTapped,
   });
 
@@ -60,6 +63,62 @@ class _DigitalVisitingCardScreenState extends State<DigitalVisitingCardScreen> {
                   children: [
                     // Verified Artisan Identity B2B Banner
                     _buildIdentityBanner(),
+                    const SizedBox(height: 12.0),
+
+                    // Edit Profile & Store Details CTA
+                    InkWell(
+                      onTap: widget.onEditProfile,
+                      borderRadius: BorderRadius.circular(14.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 11.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14.0),
+                          border: Border.all(color: const Color(0xFFEADFD6), width: 1.2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.03),
+                              blurRadius: 6.0,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFBF1EB),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              child: const Icon(Icons.manage_accounts_rounded, color: Color(0xFF8C3A16), size: 20.0),
+                            ),
+                            const SizedBox(width: 12.0),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Edit Profile & Store Details',
+                                    style: TextStyle(
+                                      fontSize: 13.5,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF221C19),
+                                    ),
+                                  ),
+                                  SizedBox(height: 2.0),
+                                  Text(
+                                    'Update personal info, craft capacity, & contact preferences',
+                                    style: TextStyle(fontSize: 11.0, color: Color(0xFF7A685F)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.arrow_forward_ios_rounded, size: 14.0, color: Color(0xFF8C3A16)),
+                          ],
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 12.0),
 
                     // Add Your Craft Story by Voice CTA
@@ -1103,66 +1162,13 @@ class _DigitalVisitingCardScreenState extends State<DigitalVisitingCardScreen> {
   }
 
   Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(color: Color(0xFFEADFD6), width: 1.0),
-        ),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(icon: Icons.storefront_outlined, label: 'Home', index: 0, isSelected: false),
-          _buildNavItem(icon: Icons.palette_outlined, label: 'Products', index: 1, isSelected: false),
-          _buildNavItem(icon: Icons.receipt_long_outlined, label: 'Orders', index: 2, isSelected: false),
-          _buildNavItem(icon: Icons.people_outline, label: 'Collaborate', index: 3, isSelected: false),
-          _buildNavItem(icon: Icons.person, label: 'Profile', index: 4, isSelected: true),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem({
-    required IconData icon,
-    required String label,
-    required int index,
-    required bool isSelected,
-  }) {
-    return InkWell(
-      onTap: () {
+    return ArtisanBottomNavBar(
+      currentIndex: 4,
+      onTap: (index) {
         if (widget.onBottomNavTapped != null) {
           widget.onBottomNavTapped!(index);
         }
       },
-      borderRadius: BorderRadius.circular(16.0),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 6.0),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFFDECE2) : Colors.transparent,
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 20.0,
-              color: isSelected ? const Color(0xFF8C3A16) : const Color(0xFF7A685F),
-            ),
-            const SizedBox(height: 2.0),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10.0,
-                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                color: isSelected ? const Color(0xFF8C3A16) : const Color(0xFF7A685F),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

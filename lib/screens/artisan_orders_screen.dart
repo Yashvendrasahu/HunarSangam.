@@ -311,7 +311,14 @@ class _ArtisanOrdersScreenState extends State<ArtisanOrdersScreen> {
       scrolledUnderElevation: 0,
       leading: IconButton(
         icon: const Icon(Icons.menu, color: _textDark),
-        onPressed: () {},
+        onPressed: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('📂 Artisan Quick Navigation: Orders, Production stages & Escrow payouts'),
+              duration: Duration(seconds: 1),
+            ),
+          );
+        },
       ),
       title: Row(
         children: [
@@ -345,7 +352,14 @@ class _ArtisanOrdersScreenState extends State<ArtisanOrdersScreen> {
       actions: [
         IconButton(
           icon: const Icon(Icons.hearing, color: Color(0xFF5D4037), size: 20),
-          onPressed: () {},
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('🎙️ Voice Assistant: Bol kar order status check karein (बोल कर ऑर्डर स्थिति जानें)'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          },
         ),
         Container(
           margin: const EdgeInsets.symmetric(vertical: 12.0),

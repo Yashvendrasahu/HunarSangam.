@@ -87,7 +87,14 @@ class BuyerRequirementsScreen extends StatelessWidget {
             ),
             child: IconButton(
               icon: const Icon(Icons.notifications_none, color: Color(0xFF6E5F57), size: 20),
-              onPressed: () {},
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('🔔 4 Artisan proposals waiting for your review'),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -294,7 +301,39 @@ class BuyerRequirementsScreen extends StatelessWidget {
                   ],
                 ),
                 OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: Colors.white,
+                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+                      builder: (ctx) => Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Sort & Filter Requirements', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                            const SizedBox(height: 12),
+                            ListTile(
+                              leading: const Icon(Icons.access_time),
+                              title: const Text('Most Recent First'),
+                              onTap: () => Navigator.pop(ctx),
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.people),
+                              title: const Text('Most Responses First'),
+                              onTap: () => Navigator.pop(ctx),
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.attach_money),
+                              title: const Text('Highest Budget First'),
+                              onTap: () => Navigator.pop(ctx),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                   icon: const Icon(Icons.tune, size: 14, color: Color(0xFF70645E)),
                   label: const Text(
                     'Filter & Sort',

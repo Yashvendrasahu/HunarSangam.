@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import '../services/hardware_service.dart';
+import '../widgets/artisan_bottom_nav_bar.dart';
 
 /// Production-ready Flutter screen matching 'o3 - order requset - reject page.png'
 /// Order Request from Heritage Handcrafts Pvt. Ltd. (50 × Bamboo Handwoven Basket)
@@ -1337,60 +1338,13 @@ class _OrderRequestScreenState extends State<OrderRequestScreen> {
 
   // 12. Bottom Navigation Bar
   Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xFFEADFD6), width: 1.0)),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(0, Icons.storefront_outlined, 'Home'),
-          _buildNavItem(1, Icons.assignment_rounded, 'Orders', isActive: true),
-          _buildNavItem(2, Icons.handshake_outlined, 'Collaborate'),
-          _buildNavItem(3, Icons.chat_bubble_outline_rounded, 'Messages'),
-          _buildNavItem(4, Icons.person_outline_rounded, 'Profile'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(int idx, IconData icon, String label, {bool isActive = false}) {
-    return InkWell(
-      onTap: () {
-        setState(() => _currentNavIndex = idx);
+    return ArtisanBottomNavBar(
+      currentIndex: 2,
+      onTap: (idx) {
         if (widget.onNavigateTab != null) {
           widget.onNavigateTab!(idx);
         }
       },
-      borderRadius: BorderRadius.circular(12.0),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-        decoration: BoxDecoration(
-          color: isActive ? const Color(0xFF8C3A16) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 20.0,
-              color: isActive ? Colors.white : const Color(0xFF7A685F),
-            ),
-            const SizedBox(height: 2.0),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 9.5,
-                fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
-                color: isActive ? Colors.white : const Color(0xFF7A685F),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

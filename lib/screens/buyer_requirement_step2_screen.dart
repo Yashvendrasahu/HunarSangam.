@@ -98,7 +98,15 @@ class _BuyerRequirementStep2ScreenState extends State<BuyerRequirementStep2Scree
           ),
           IconButton(
             icon: const Icon(Icons.translate, color: terracotta, size: 20),
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('🌐 Language: English & Hindi active'),
+                  duration: Duration(seconds: 1),
+                ),
+              );
+            },
+            tooltip: 'Language',
           ),
           const SizedBox(width: 6),
         ],
@@ -555,7 +563,7 @@ class _BuyerRequirementStep2ScreenState extends State<BuyerRequirementStep2Scree
     );
   }
 
-  static Widget _buildSectionCard({
+  Widget _buildSectionCard({
     required String title,
     required IconData icon,
     String? actionText,
@@ -594,7 +602,14 @@ class _BuyerRequirementStep2ScreenState extends State<BuyerRequirementStep2Scree
               ),
               if (actionText != null)
                 TextButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Editing $title settings...'),
+                        duration: const Duration(seconds: 1),
+                      ),
+                    );
+                  },
                   icon: actionIcon != null ? Icon(actionIcon, size: 13, color: const Color(0xFF9E401A)) : const SizedBox.shrink(),
                   label: Text(
                     actionText,

@@ -15,6 +15,7 @@ import '../widgets/brand_logo_card.dart';
 import 'artisan_orders_screen.dart';
 import 'collaboration_hub_screen.dart';
 import 'digital_visiting_card_screen.dart';
+import 'profile_management_screen.dart';
 import 'order_details_screen.dart';
 import 'order_request_screen.dart';
 import 'artisan_collective_screen.dart';
@@ -23,6 +24,7 @@ import 'artisan_buyer_chat_screen.dart';
 import 'artisan_chat_screen.dart';
 import 'conversations_list_screen.dart';
 import '../services/chat_service.dart';
+import '../widgets/artisan_bottom_nav_bar.dart';
 import '../services/supabase_config.dart';
 import '../widgets/api_config_dialog.dart';
 
@@ -32,11 +34,13 @@ import '../widgets/api_config_dialog.dart';
 class ArtisanHomeScreen extends StatefulWidget {
   final OnboardingState? state;
   final VoidCallback? onLogout;
+  final Function(OnboardingState)? onStateChanged;
 
   const ArtisanHomeScreen({
     super.key,
     this.state,
     this.onLogout,
+    this.onStateChanged,
   });
 
   @override
@@ -506,6 +510,20 @@ class _ArtisanHomeScreenState extends State<ArtisanHomeScreen> {
     if (_currentNavIndex == 4) {
       return DigitalVisitingCardScreen(
         onBack: () => setState(() => _currentNavIndex = 0),
+        onEditProfile: () {
+          setState(() {
+            _activeSubScreen = ProfileManagementScreen(
+              artisanState: widget.state,
+              initialRole: UserRole.artisan,
+              onBack: () => setState(() => _activeSubScreen = null),
+              onArtisanSaved: (updatedState) {
+                if (widget.onStateChanged != null) {
+                  widget.onStateChanged!(updatedState);
+                }
+              },
+            );
+          });
+        },
         onBottomNavTapped: (index) => setState(() => _currentNavIndex = index),
       );
     }
@@ -596,7 +614,15 @@ class _ArtisanHomeScreenState extends State<ArtisanHomeScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      bottomNavigationBar: ArtisanBottomNavBar(
+        currentIndex: _currentNavIndex,
+        onTap: (idx) {
+          setState(() {
+            _currentNavIndex = idx;
+            _productsFlowInitialStep = 0;
+          });
+        },
+      ),
     );
   }
 
@@ -2127,65 +2153,6 @@ class _ArtisanHomeScreenState extends State<ArtisanHomeScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  // 9. Bottom Navigation Bar (5 tabs)
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFFFFFDFB),
-        border: Border(top: BorderSide(color: Color(0xFFEADFD6), width: 1.0)),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(0, Icons.storefront_rounded, 'Home'),
-          _buildNavItem(1, Icons.palette_outlined, 'Products'),
-          _buildNavItem(2, Icons.receipt_long_outlined, 'Orders'),
-          _buildNavItem(3, Icons.groups_outlined, 'Collaborate'),
-          _buildNavItem(4, Icons.person_outline_rounded, 'Profile'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(int index, IconData icon, String label) {
-    final bool isSelected = _currentNavIndex == index;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _currentNavIndex = index;
-        });
-      },
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFF8E5D8) : Colors.transparent,
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 20.0,
-              color: isSelected ? const Color(0xFF8C3A16) : const Color(0xFF7A685F),
-            ),
-            const SizedBox(height: 2.0),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10.5,
-                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                color: isSelected ? const Color(0xFF8C3A16) : const Color(0xFF7A685F),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
