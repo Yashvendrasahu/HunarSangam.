@@ -329,13 +329,16 @@ uvicorn main:app --reload
 
 ## 🎥 Demo
 
-### Project Demo Video
+### Project APK formate 
 
-[Watch HunarSangam Demo](YOUR-YOUTUBE-LINK)
+https://github.com/Yashvendrasahu/HunarSangam./releases/tag/v1.0.0
 
-### Live Demo
+### Live Demo YouTube
+https://youtu.be/yV1A_SB4NfM
 
-[Open HunarSangam](YOUR-LIVE-DEMO-LINK)
+
+### Ui/UX Design Figma 
+https://www.figma.com/community/file/1685189160451380344
 
 
 ---
