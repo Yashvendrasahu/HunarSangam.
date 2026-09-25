@@ -309,8 +309,8 @@ The experience communicates the cultural story behind traditional craftsmanship.
 
 The complete UI/UX design and visual exploration are created using Figma.
 
-**Figma Design:**
-`[Add Figma Link Here]`
+**Figma Design:** 
+https://www.figma.com/community/file/1685189160451380344
 
 ---
 
