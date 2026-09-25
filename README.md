@@ -118,3 +118,272 @@ flutter build apk --release \
 ## 🏆 Smart India Hackathon (SIH)
 - **Project**: HunarSangam
 - **Tech Stack**: Flutter (Dart), Supabase (PostgreSQL), Google Gemini API
+
+# 🧶 HunarSangam
+
+### Digital Platform for Empowering Traditional Artisans & Handicraft Heritage
+
+**Smart India Hackathon 2026 — SIH26090**
+**Team: Elite Innovators**
+
+---
+
+## 🌟 About HunarSangam
+
+**HunarSangam** is a digital platform designed to connect traditional artisans, their unique crafts, and modern customers through technology.
+
+The platform aims to help artisans **showcase their skills, preserve traditional craftsmanship, reach wider markets, and build sustainable digital livelihoods**.
+
+HunarSangam brings together artisan profiles, handcrafted products, storytelling, AI-assisted discovery, and digital commerce into a single ecosystem.
+
+---
+
+## 🎯 Problem Statement
+
+Traditional artisans often face challenges such as:
+
+* Limited access to wider markets
+* Lack of digital visibility
+* Difficulty in showcasing traditional craftsmanship
+* Dependence on intermediaries
+* Limited digital knowledge
+* Risk of traditional crafts losing visibility among younger generations
+
+HunarSangam addresses these challenges through an accessible and technology-driven digital platform.
+
+---
+
+## 💡 Our Solution
+
+HunarSangam provides a unified platform where:
+
+**Artisans → Showcase their skills & products**
+
+**Customers → Discover authentic traditional crafts**
+
+**AI → Helps users discover and interact with craft content**
+
+**Digital Marketplace → Creates opportunities for wider reach**
+
+**Craft Stories → Preserve the cultural context behind every creation**
+
+---
+
+## ✨ Key Features
+
+### 👨‍🎨 Artisan Profiles
+
+Create digital profiles for artisans and showcase their skills, experience, craft traditions and products.
+
+### 🛍️ Product Catalogue
+
+Browse and explore handcrafted products with structured product information.
+
+### 📖 Craft Stories
+
+Tell the story behind traditional crafts, artisans and regional craftsmanship to preserve cultural heritage.
+
+### 🤖 AI-Powered Assistance
+
+AI-based features help users discover crafts, understand products and interact with the platform more naturally.
+
+### 🎙️ Voice & Camera Interaction
+
+The platform is designed to support modern interaction methods such as voice and camera-based experiences.
+
+### 🌐 Digital Market Access
+
+Help traditional artisans reach customers beyond their local markets.
+
+### 🔎 Smart Discovery
+
+Users can explore products and crafts based on their interests and requirements.
+
+---
+
+## 🏗️ Technology Stack
+
+### Frontend
+
+* Flutter
+* Dart
+
+### Backend
+
+* Node.js
+* Express.js
+
+### Database & Services
+
+* Supabase
+
+### AI & Machine Learning
+
+* Python
+* FastAPI
+* AI/ML Models
+* Hugging Face
+
+### Design & Development
+
+* Figma
+* GitHub
+* Vercel
+
+---
+
+## 🔄 System Architecture
+
+```text
+                 ┌─────────────────────┐
+                 │       User          │
+                 └──────────┬──────────┘
+                            │
+                            ▼
+                 ┌─────────────────────┐
+                 │   Flutter App       │
+                 │  Mobile / Web UI    │
+                 └──────────┬──────────┘
+                            │
+                            ▼
+                 ┌─────────────────────┐
+                 │   Node.js +         │
+                 │   Express Backend   │
+                 └───────┬─────┬───────┘
+                         │     │
+             ┌───────────┘     └────────────┐
+             ▼                              ▼
+    ┌─────────────────┐            ┌─────────────────┐
+    │    Supabase     │            │   FastAPI / AI  │
+    │ Database & Auth │            │    Services     │
+    └─────────────────┘            └────────┬────────┘
+                                             │
+                                             ▼
+                                    ┌─────────────────┐
+                                    │   AI / ML       │
+                                    │     Models      │
+                                    └─────────────────┘
+```
+
+---
+
+## 📱 Platform Modules
+
+* 🏠 Home & Discovery
+* 👨‍🎨 Artisan Profiles
+* 🛍️ Product Catalogue
+* 📖 Craft Stories
+* 🤖 AI Assistant
+* 🎙️ Voice Interaction
+* 📷 Camera-based Interaction
+* 🔍 Search & Discovery
+* 👤 User Profile
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Make sure the following are installed:
+
+* Flutter SDK
+* Dart SDK
+* Node.js
+* Git
+* Python
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/YOUR-USERNAME/HunarSangam.git
+cd HunarSangam
+```
+
+### Frontend Setup
+
+```bash
+flutter pub get
+flutter run
+```
+
+### Backend Setup
+
+```bash
+cd backend
+npm install
+npm start
+```
+
+### AI Service Setup
+
+```bash
+cd ai-service
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
+
+> Configure the required environment variables before running the application.
+
+---
+
+## 🎥 Demo
+
+### Project Demo Video
+
+[Watch HunarSangam Demo](YOUR-YOUTUBE-LINK)
+
+### Live Demo
+
+[Open HunarSangam](YOUR-LIVE-DEMO-LINK)
+
+
+---
+
+## 🌱 Expected Impact
+
+HunarSangam aims to:
+
+* Increase digital visibility of traditional artisans
+* Provide wider market access
+* Encourage preservation of traditional crafts
+* Connect customers with authentic handcrafted products
+* Promote India's diverse craft heritage
+* Create opportunities for technology-enabled artisan livelihoods
+
+---
+
+## 🔮 Future Scope
+
+Future development may include:
+
+* Advanced AI-based craft recognition
+* Multilingual voice assistance
+* Personalized product recommendations
+* Digital payments and integrated commerce
+* Wider artisan onboarding
+* Integration with suitable government and digital commerce ecosystems
+* Analytics for artisans and platform administrators
+
+---
+
+## 🏆 Smart India Hackathon
+
+**Problem Statement:** SIH26090
+**Project:** HunarSangam
+**Team:** Elite Innovators
+**Event:** Smart India Hackathon 2026
+
+---
+
+## 👥 Team Elite Innovators
+
+**HunarSangam — Technology for Tradition, Digital Access for Artisans.**
+
+---
+
+
+
+This project is developed as part of **Smart India Hackathon 2026**.
+
+© 2026 Team Elite Innovators
